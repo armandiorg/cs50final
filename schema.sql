@@ -30,6 +30,14 @@ CREATE TABLE IF NOT EXISTS voting_options (
     FOREIGN KEY (session_id) REFERENCES voting_sessions(id)
 );
 
+CREATE TABLE IF NOT EXISTS referral_codes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    code TEXT UNIQUE NOT NULL,
+    used_by TEXT,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    is_active INTEGER DEFAULT 1
+);
+
 -- Seed data for demo
 INSERT INTO events (title, description, event_datetime, location, event_type, track, status) VALUES
 ('Harvard-Yale Tailgate 2024', 'The biggest tailgate of the year! Join us before The Game for food, music, and Harvard spirit. Bring your crimson gear!', '2024-11-23 11:00:00', 'Harvard Stadium Parking Lot', 'tailgate', 'official', 'published'),
@@ -47,3 +55,26 @@ INSERT INTO voting_options (session_id, option_text, option_order, vote_count) V
 (1, 'Superhero', 1, 24),
 (1, 'Historical Figure', 2, 8),
 (1, 'Pop Culture Icon', 3, 31);
+
+-- Referral codes for exclusive access
+INSERT INTO referral_codes (code, is_active) VALUES
+('HARVARD2024', 1),
+('CRIMSON50', 1),
+('VERITAS24', 1),
+('POOPMASTER', 1),
+('YARD2024', 1),
+('WIDENER50', 1),
+('ANNENBERG24', 1),
+('MEMORIAL2024', 1),
+('DUNSTER50', 1),
+('LOWELL24', 1),
+('ADAMS2024', 1),
+('QUINCY50', 1),
+('LEVERETT24', 1),
+('WINTHROP50', 1),
+('PFORZHEIMER24', 1),
+('CURRIER50', 1),
+('CABOT2024', 1),
+('MATHER50', 1),
+('KIRKLAND24', 1),
+('ELIOT2024', 1);

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Harvard Poops</title>
+    <title>Admin Dashboard - Harvard Poops</title>
     <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
@@ -11,88 +11,178 @@
         <div class="container">
             <h1 class="logo">🎉 Harvard Poops Admin</h1>
             <nav>
-                <a href="/">Back to Events</a>
-                <button id="logout-btn" style="display: none;">Logout</button>
+                <a href="/" class="nav-link">Back to Events</a>
+                <button id="logout-btn" class="btn-secondary" style="display: none;">Logout</button>
             </nav>
         </div>
     </header>
 
     <main class="container">
         <!-- Login Form -->
-        <div id="login-section">
-            <div class="admin-card">
-                <h2>Admin Login</h2>
+        <div id="login-section" class="login-container">
+            <div class="login-card">
+                <div class="login-header">
+                    <div class="login-icon">🔐</div>
+                    <h2>Admin Login</h2>
+                    <p class="login-subtitle">Enter your password to access the dashboard</p>
+                </div>
                 <form id="login-form">
                     <div class="form-group">
-                        <label>Password</label>
-                        <input type="password" id="admin-password" required>
+                        <label for="admin-password">Password</label>
+                        <input type="password" id="admin-password" class="form-control" placeholder="Enter admin password" required>
                     </div>
-                    <button type="submit" class="btn-primary">Login</button>
+                    <button type="submit" class="btn-primary btn-block">Login to Dashboard</button>
                 </form>
-                <p class="hint">Hint: harvardpoops2024</p>
+                <p class="login-hint">🔑 Hint: harvardpoops2024</p>
             </div>
         </div>
 
         <!-- Admin Dashboard -->
         <div id="admin-section" style="display: none;">
-            <div class="admin-header">
-                <h2>Manage Events</h2>
-                <button id="create-event-btn" class="btn-primary">+ Create Event</button>
+
+            <!-- Dashboard Header -->
+            <div class="dashboard-header">
+                <div class="dashboard-title">
+                    <h2>Dashboard Overview</h2>
+                    <p class="dashboard-subtitle">Manage events and view statistics</p>
+                </div>
+                <button id="create-event-btn" class="btn-primary btn-large">
+                    <span class="btn-icon">➕</span>
+                    Create New Event
+                </button>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card stat-card-primary">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="totalEvents">0</div>
+                        <div class="stat-label">Total Events</div>
+                    </div>
+                </div>
+                <div class="stat-card stat-card-success">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="publishedEvents">0</div>
+                        <div class="stat-label">Published Events</div>
+                    </div>
+                </div>
+                <div class="stat-card stat-card-info">
+                    <div class="stat-icon">📅</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="upcomingEvents">0</div>
+                        <div class="stat-label">Upcoming Events</div>
+                    </div>
+                </div>
+                <div class="stat-card stat-card-warning">
+                    <div class="stat-icon">🤝</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="partnerEvents">0</div>
+                        <div class="stat-label">Partner Events</div>
+                    </div>
+                </div>
             </div>
 
             <!-- Create/Edit Form -->
             <div id="event-form-section" style="display: none;">
-                <div class="admin-card">
-                    <h3 id="form-title">Create Event</h3>
+                <div class="form-card">
+                    <div class="form-card-header">
+                        <h3 id="form-title">Create New Event</h3>
+                        <button type="button" id="cancel-btn" class="btn-icon-only" title="Close">✕</button>
+                    </div>
+
                     <form id="event-form">
                         <input type="hidden" id="event-id">
 
-                        <div class="form-group">
-                            <label>Title *</label>
-                            <input type="text" id="title" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Description</label>
-                            <textarea id="description" rows="4"></textarea>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Date & Time *</label>
-                                <input type="datetime-local" id="event-datetime" required>
+                        <!-- Basic Information Section -->
+                        <div class="form-section">
+                            <div class="form-section-header">
+                                <h4>📝 Basic Information</h4>
+                                <p class="form-section-description">Essential event details</p>
                             </div>
 
                             <div class="form-group">
-                                <label>Location</label>
-                                <input type="text" id="location">
+                                <label for="title">Event Title <span class="required">*</span></label>
+                                <input type="text" id="title" class="form-control" placeholder="e.g., Harvard Poops Fall Mixer" required>
+                                <small class="form-help">Make it catchy and descriptive</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="description">Description</label>
+                                <textarea id="description" class="form-control" rows="5" placeholder="Tell students what to expect at this event..."></textarea>
+                                <small class="form-help">Include important details like dress code, what to bring, etc.</small>
                             </div>
                         </div>
 
-                        <div class="form-row">
+                        <!-- Event Details Section -->
+                        <div class="form-section">
+                            <div class="form-section-header">
+                                <h4>📍 Event Details</h4>
+                                <p class="form-section-description">When and where</p>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="event-datetime">Date & Time <span class="required">*</span></label>
+                                    <input type="datetime-local" id="event-datetime" class="form-control" required>
+                                    <small class="form-help">When does the event start?</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="location">Location</label>
+                                    <input type="text" id="location" class="form-control" placeholder="e.g., Adams House Dining Hall">
+                                    <small class="form-help">Be specific so students can find it</small>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="event-type">Event Type</label>
+                                    <select id="event-type" class="form-control">
+                                        <option value="party">🎉 Party</option>
+                                        <option value="contest">🏆 Contest</option>
+                                        <option value="tailgate">🎊 Tailgate</option>
+                                        <option value="mixer">🍹 Mixer</option>
+                                        <option value="other">📌 Other</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="track">Track</label>
+                                    <select id="track" class="form-control">
+                                        <option value="official">⭐ Harvard Poops Official</option>
+                                        <option value="partner">🤝 Partner Event</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Publishing Section -->
+                        <div class="form-section">
+                            <div class="form-section-header">
+                                <h4>🚀 Publishing</h4>
+                                <p class="form-section-description">Event status and visibility</p>
+                            </div>
+
                             <div class="form-group">
-                                <label>Type</label>
-                                <select id="event-type">
-                                    <option value="party">Party</option>
-                                    <option value="contest">Contest</option>
-                                    <option value="tailgate">Tailgate</option>
-                                    <option value="mixer">Mixer</option>
-                                    <option value="other">Other</option>
+                                <label for="status">Status</label>
+                                <select id="status" class="form-control">
+                                    <option value="draft">📄 Draft (not visible to students)</option>
+                                    <option value="published">✅ Published (visible to everyone)</option>
+                                    <option value="archived">📦 Archived (hidden from main list)</option>
                                 </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label>Track</label>
-                                <select id="track">
-                                    <option value="official">HP Official</option>
-                                    <option value="partner">Partner Event</option>
-                                </select>
+                                <small class="form-help">Draft events are only visible in the admin panel</small>
                             </div>
                         </div>
 
+                        <!-- Form Actions -->
                         <div class="form-actions">
-                            <button type="button" id="cancel-btn" class="btn-secondary">Cancel</button>
-                            <button type="submit" class="btn-primary">Save Event</button>
+                            <button type="button" id="cancel-btn-bottom" class="btn-secondary">Cancel</button>
+                            <button type="submit" class="btn-primary">
+                                <span class="btn-icon">💾</span>
+                                Save Event
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -100,31 +190,80 @@
 
             <!-- Events List -->
             <div id="events-list-section">
-                <div class="admin-card">
-                    <h3>All Events</h3>
-                    <table id="admin-events-table">
-                        <thead>
-                            <tr>
-                                <th>Title</th>
-                                <th>Date</th>
-                                <th>Type</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="admin-events-tbody">
-                            <tr>
-                                <td colspan="4" class="loading">Loading events...</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="table-card">
+                    <div class="table-card-header">
+                        <h3>All Events</h3>
+                        <div class="table-actions">
+                            <input type="search" id="search-events" class="search-input" placeholder="Search events...">
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table id="admin-events-table" class="events-table">
+                            <thead>
+                                <tr>
+                                    <th class="sortable" data-sort="title">
+                                        <div class="th-content">
+                                            <span>Title</span>
+                                            <span class="sort-icon">⇅</span>
+                                        </div>
+                                    </th>
+                                    <th class="sortable" data-sort="datetime">
+                                        <div class="th-content">
+                                            <span>Date & Time</span>
+                                            <span class="sort-icon">⇅</span>
+                                        </div>
+                                    </th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Track</th>
+                                    <th class="actions-column">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-events-tbody">
+                                <tr>
+                                    <td colspan="6" class="loading-cell">
+                                        <div class="loading-spinner"></div>
+                                        <p>Loading events...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="table-footer" id="table-footer" style="display: none;">
+                        <p class="table-footer-text">
+                            Showing <span id="events-count">0</span> events
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
     </main>
 
+    <!-- Mobile Bottom Nav (shown when admin section is visible) -->
+    <div id="mobile-bottom-nav" class="mobile-bottom-nav" style="display: none;">
+        <button class="nav-item" onclick="window.location.href='/'">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Home</span>
+        </button>
+        <button class="nav-item" id="mobile-create-btn">
+            <span class="nav-icon">➕</span>
+            <span class="nav-label">Create</span>
+        </button>
+        <button class="nav-item active">
+            <span class="nav-icon">📊</span>
+            <span class="nav-label">Dashboard</span>
+        </button>
+    </div>
+
     <footer>
         <div class="container">
             <p>&copy; 2024 Harvard Poops. All rights reserved.</p>
+            <p class="footer-links">
+                <a href="/about.html">About</a> •
+                <a href="/rules.html">Rules</a>
+            </p>
         </div>
     </footer>
 

@@ -111,6 +111,49 @@ def admin_login():
         return jsonify({'success': True, 'token': 'admin-token'})
     return jsonify({'error': 'Invalid password'}), 401
 
+# Referral Code Authentication
+@app.route('/api/auth/verify-code', methods=['POST'])
+def verify_referral_code():
+    data = request.json
+    code = data.get('code', '').strip().upper()
+
+    if not code:
+        return jsonify({'error': 'Referral code is required'}), 400
+
+    db = get_db()
+
+    # Check if code exists and is active
+    referral = db.execute(
+        'SELECT * FROM referral_codes WHERE code = ? AND is_active = 1',
+        (code,)
+    ).fetchone()
+
+    if not referral:
+        return jsonify({'error': 'Invalid or inactive referral code'}), 401
+
+    # Check if code has already been used
+    if referral['used_by']:
+        return jsonify({'error': 'This referral code has already been used'}), 401
+
+    # Mark code as used
+    user_identifier = f"user_{datetime.now().strftime('%Y%m%d%H%M%S')}"
+
+    db.execute(
+        'UPDATE referral_codes SET used_by = ? WHERE code = ?',
+        (user_identifier, code)
+    )
+    db.commit()
+
+    # Generate simple token
+    import hashlib
+    token = hashlib.sha256(f"{code}-{datetime.now()}".encode()).hexdigest()
+
+    return jsonify({
+        'success': True,
+        'message': 'Access granted',
+        'token': token
+    }), 200
+
 @app.route('/api/admin/events', methods=['GET'])
 def get_admin_events():
     # Simple auth check
@@ -180,7 +223,11 @@ def delete_event(event_id):
 
 # Serve frontend
 @app.route('/')
-def index():
+def landing():
+    return send_from_directory('static', 'landing.html')
+
+@app.route('/events')
+def events():
     return send_from_directory('static', 'index.html')
 
 @app.route('/event/<int:event_id>')

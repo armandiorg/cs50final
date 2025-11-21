@@ -2,11 +2,28 @@
 
 const API_BASE = window.location.origin;
 
-// Load events on page load
+// AUTH CHECK - Protect this page
 document.addEventListener('DOMContentLoaded', () => {
+    // Check for auth token
+    const token = localStorage.getItem('userToken');
+    if (!token) {
+        // No token, redirect to landing page
+        window.location.href = '/';
+        return;
+    }
+
+    // Token exists, load events
     loadEvents('all');
     setupFilters();
 });
+
+// Logout function
+function logout() {
+    if (confirm('logout?')) {
+        localStorage.removeItem('userToken');
+        window.location.href = '/';
+    }
+}
 
 // Load events from API
 async function loadEvents(filter = 'all') {
@@ -36,8 +53,29 @@ async function loadEvents(filter = 'all') {
 
         grid.innerHTML = events.map(event => createEventCard(event)).join('');
 
-        // Add click handlers
-        document.querySelectorAll('.event-card').forEach(card => {
+        // Add smooth fade-in animation with stagger
+        const cards = document.querySelectorAll('.event-card');
+        cards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+
+            setTimeout(() => {
+                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 100); // Stagger by 100ms
+
+            // Add click handler to the button specifically
+            const detailsBtn = card.querySelector('.btn-view-details');
+            if (detailsBtn) {
+                detailsBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const eventId = card.dataset.eventId;
+                    window.location.href = `/event/${eventId}`;
+                });
+            }
+
+            // Also allow clicking the whole card
             card.addEventListener('click', () => {
                 const eventId = card.dataset.eventId;
                 window.location.href = `/event/${eventId}`;
@@ -49,37 +87,56 @@ async function loadEvents(filter = 'all') {
     }
 }
 
+// Event type configurations
+const EVENT_TYPE_CONFIG = {
+    party: { emoji: '🎉', color: '#A51C30' },
+    contest: { emoji: '🏆', color: '#EC4899' },
+    tailgate: { emoji: '🏈', color: '#06B6D4' },
+    mixer: { emoji: '🍹', color: '#10B981' },
+    other: { emoji: '⭐', color: '#6B7280' }
+};
+
 // Create event card HTML
 function createEventCard(event) {
-    const badgeClass = `badge-${event.event_type}`;
+    const eventType = event.event_type || 'other';
+    const track = event.track || 'official';
+    const config = EVENT_TYPE_CONFIG[eventType] || EVENT_TYPE_CONFIG.other;
+
+    // Format date and time
     const date = new Date(event.event_datetime);
     const dateStr = date.toLocaleDateString('en-US', {
+        weekday: 'short',
         month: 'short',
-        day: 'numeric',
-        year: 'numeric'
+        day: 'numeric'
     });
     const timeStr = date.toLocaleTimeString('en-US', {
         hour: 'numeric',
         minute: '2-digit'
     });
 
+    // Determine header gradient color
+    const gradientColor = track === 'official' ? '#A51C30' : '#06B6D4';
+
+    // Track badge label and class
+    const trackLabel = track === 'official' ? 'OFFICIAL HP' : 'PARTNER EVENT';
+
+    // Truncate description
+    const description = event.description ? truncate(event.description, 120) : '';
+
     return `
         <div class="event-card" data-event-id="${event.id}">
-            <div class="event-card-content">
-                <span class="event-badge ${badgeClass}">${event.event_type}</span>
-                <h3 class="event-title">${event.title}</h3>
-                <div class="event-datetime">
-                    📅 ${dateStr} at ${timeStr}
-                </div>
-                ${event.location ? `
-                <div class="event-location">
-                    📍 ${event.location}
-                </div>
-                ` : ''}
-                ${event.description ? `
-                <p class="event-description">${truncate(event.description, 100)}</p>
-                ` : ''}
+            <div class="event-header" style="background: linear-gradient(135deg, ${gradientColor} 0%, #1E1E1E 100%)"></div>
+            <div class="event-badges">
+                <span class="event-type-badge">${config.emoji} ${eventType}</span>
+                <span class="track-badge ${track}">${trackLabel}</span>
             </div>
+            <h3 class="event-title">${event.title}</h3>
+            <div class="event-meta">
+                <div class="meta-item">📅 ${dateStr} at ${timeStr}</div>
+                ${event.location ? `<div class="meta-item">📍 ${event.location}</div>` : ''}
+            </div>
+            ${description ? `<p class="event-description">${description}</p>` : ''}
+            <button class="btn-view-details">View Details →</button>
         </div>
     `;
 }

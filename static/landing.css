@@ -1,0 +1,310 @@
+/* ============================================
+   HARVARD POOPS - SUPREME MINIMAL LANDING
+   High Fashion Gate / Sophisticated & Clean
+   ============================================ */
+
+/* Reset & Base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* Colors - Minimal Palette */
+    --black: #000000;
+    --white: #FFFFFF;
+    --gray: #808080;
+    --light-gray: #E5E5E5;
+    --crimson: #A51C30;
+    --error: #FF0000;
+
+    /* Typography */
+    --font: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Arial", sans-serif;
+
+    /* Timing */
+    --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+    font-family: var(--font);
+    background-color: var(--white);
+    color: var(--black);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container {
+    width: 100%;
+    max-width: 480px;
+    padding: 0 24px;
+}
+
+.gate {
+    width: 100%;
+}
+
+/* Brand / Wordmark */
+.brand {
+    text-align: center;
+    margin-bottom: 80px;
+}
+
+.wordmark {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--black);
+    margin: 0 0 12px 0;
+    line-height: 1;
+}
+
+.tagline {
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: lowercase;
+    color: var(--gray);
+    margin: 0;
+}
+
+/* Gate Content */
+.gate-content {
+    width: 100%;
+}
+
+/* Form */
+.gate-form {
+    width: 100%;
+}
+
+.code-input {
+    width: 100%;
+    height: 56px;
+    border: 2px solid var(--black);
+    background: var(--white);
+    color: var(--black);
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 0 20px;
+    margin-bottom: 12px;
+    transition: all var(--transition);
+    outline: none;
+}
+
+.code-input::placeholder {
+    color: var(--gray);
+    opacity: 1;
+}
+
+.code-input:focus {
+    border-color: var(--crimson);
+}
+
+.code-input.error {
+    border-color: var(--error);
+    animation: shake 0.3s;
+}
+
+/* Submit Button */
+.submit-btn {
+    width: 100%;
+    height: 56px;
+    background: var(--black);
+    color: var(--white);
+    border: 2px solid var(--black);
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all var(--transition);
+    outline: none;
+    margin-bottom: 24px;
+}
+
+.submit-btn:hover {
+    background: var(--white);
+    color: var(--black);
+}
+
+.submit-btn:active {
+    transform: scale(0.98);
+}
+
+.submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Footnote */
+.footnote {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin: 0;
+}
+
+/* Error Message */
+.error-message {
+    display: none;
+    padding: 16px;
+    margin-bottom: 16px;
+    background: var(--error);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.error-message.show {
+    display: block;
+    animation: slideDown 0.3s ease;
+}
+
+/* Success Message */
+.success-message {
+    display: none;
+    padding: 16px;
+    margin-bottom: 16px;
+    background: var(--black);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.success-message.show {
+    display: block;
+    animation: slideDown 0.3s ease;
+}
+
+/* Animations */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .container {
+        padding: 0 20px;
+    }
+
+    .brand {
+        margin-bottom: 60px;
+    }
+
+    .wordmark {
+        font-size: 20px;
+    }
+
+    .tagline {
+        font-size: 10px;
+    }
+
+    .code-input,
+    .submit-btn {
+        height: 52px;
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 360px) {
+    .wordmark {
+        font-size: 18px;
+    }
+
+    .tagline {
+        font-size: 9px;
+    }
+
+    .code-input,
+    .submit-btn {
+        height: 48px;
+        font-size: 12px;
+    }
+}
+
+/* Dark Mode Support (Optional) */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: var(--black);
+        color: var(--white);
+    }
+
+    .wordmark {
+        color: var(--white);
+    }
+
+    .tagline {
+        color: var(--light-gray);
+    }
+
+    .code-input {
+        background: var(--black);
+        color: var(--white);
+        border-color: var(--white);
+    }
+
+    .code-input:focus {
+        border-color: var(--crimson);
+    }
+
+    .submit-btn {
+        background: var(--white);
+        color: var(--black);
+        border-color: var(--white);
+    }
+
+    .submit-btn:hover {
+        background: var(--black);
+        color: var(--white);
+    }
+
+    .footnote {
+        color: var(--light-gray);
+    }
+}
+
+/* Accessibility */
+.code-input:focus-visible,
+.submit-btn:focus-visible {
+    outline: 2px solid var(--crimson);
+    outline-offset: 2px;
+}
+
+/* Print */
+@media print {
+    body {
+        background: white;
+    }
+}
