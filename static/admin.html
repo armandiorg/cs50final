@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Harvard Poops</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">🎉 Harvard Poops Admin</h1>
+            <nav>
+                <a href="/">Back to Events</a>
+                <button id="logout-btn" style="display: none;">Logout</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Login Form -->
+        <div id="login-section">
+            <div class="admin-card">
+                <h2>Admin Login</h2>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="admin-password" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Login</button>
+                </form>
+                <p class="hint">Hint: harvardpoops2024</p>
+            </div>
+        </div>
+
+        <!-- Admin Dashboard -->
+        <div id="admin-section" style="display: none;">
+            <div class="admin-header">
+                <h2>Manage Events</h2>
+                <button id="create-event-btn" class="btn-primary">+ Create Event</button>
+            </div>
+
+            <!-- Create/Edit Form -->
+            <div id="event-form-section" style="display: none;">
+                <div class="admin-card">
+                    <h3 id="form-title">Create Event</h3>
+                    <form id="event-form">
+                        <input type="hidden" id="event-id">
+
+                        <div class="form-group">
+                            <label>Title *</label>
+                            <input type="text" id="title" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea id="description" rows="4"></textarea>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Date & Time *</label>
+                                <input type="datetime-local" id="event-datetime" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Location</label>
+                                <input type="text" id="location">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Type</label>
+                                <select id="event-type">
+                                    <option value="party">Party</option>
+                                    <option value="contest">Contest</option>
+                                    <option value="tailgate">Tailgate</option>
+                                    <option value="mixer">Mixer</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Track</label>
+                                <select id="track">
+                                    <option value="official">HP Official</option>
+                                    <option value="partner">Partner Event</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" id="cancel-btn" class="btn-secondary">Cancel</button>
+                            <button type="submit" class="btn-primary">Save Event</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Events List -->
+            <div id="events-list-section">
+                <div class="admin-card">
+                    <h3>All Events</h3>
+                    <table id="admin-events-table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-events-tbody">
+                            <tr>
+                                <td colspan="4" class="loading">Loading events...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Harvard Poops. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="/admin.js"></script>
+</body>
+</html>

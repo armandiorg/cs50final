@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Details - Harvard Poops</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">🎉 Harvard Poops</h1>
+            <nav>
+                <a href="/">Events</a>
+                <a href="/admin">Admin</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div id="event-detail">
+            <div class="loading">Loading event...</div>
+        </div>
+
+        <!-- Voting Section -->
+        <div id="voting-section" style="display: none;">
+            <div class="voting-container">
+                <h2 id="voting-question"></h2>
+                <p class="vote-count"><span id="total-votes">0</span> votes so far</p>
+                <div id="voting-options" class="voting-options"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Harvard Poops. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="/event.js"></script>
+</body>
+</html>
