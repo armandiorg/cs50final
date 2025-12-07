@@ -87,31 +87,48 @@ cs50final/
 ├── public/              # Static assets (images, favicon, etc.)
 ├── src/
 │   ├── components/      # Reusable React components
-│   │   ├── EventCard.jsx
-│   │   ├── EventForm.jsx
-│   │   ├── VotingWidget.jsx
+│   │   ├── EventCard.jsx           # Individual event card (unlocked/locked)
+│   │   ├── EventFeed.jsx           # Feed container with exclusivity
+│   │   ├── CreateEventButton.jsx  # Floating + button
+│   │   ├── CreateEventForm.jsx    # Event creation modal
 │   │   └── ...
-│   ├── pages/           # Page-level components
-│   │   ├── Home.jsx
-│   │   ├── EventDetail.jsx
-│   │   ├── AdminDashboard.jsx
-│   │   └── HostDashboard.jsx
+│   ├── contexts/        # React Context providers
+│   │   ├── AuthContext.jsx        # Authentication state
+│   │   └── EventContext.jsx       # Event feed state + realtime
 │   ├── hooks/           # Custom React hooks
-│   │   ├── useEvents.js
-│   │   ├── useAuth.js
-│   │   └── useVoting.js
+│   │   ├── useEventFeed.js        # Exclusivity logic
+│   │   ├── useRSVP.js             # RSVP toggle
+│   │   ├── useEventCreate.js      # Event creation
+│   │   └── ...
+│   ├── services/        # Data access layer
+│   │   ├── eventService.js        # Event CRUD operations
+│   │   ├── rsvpService.js         # RSVP operations
+│   │   └── imageService.js        # Image upload to Supabase Storage
+│   ├── pages/           # Page-level components
+│   │   ├── Home.jsx               # Main feed page
+│   │   ├── Login.jsx              # Login page
+│   │   ├── Signup.jsx             # Signup with referral code
+│   │   ├── Profile.jsx            # User profile
+│   │   └── ...
 │   ├── lib/             # Utilities and helpers
-│   │   ├── supabase.js  # Supabase client setup
-│   │   └── utils.js     # Helper functions
+│   │   ├── supabase.js            # Supabase client setup
+│   │   └── utils.js               # Helper functions
 │   ├── styles/          # CSS files
+│   │   ├── tokens.css             # Design system variables
+│   │   ├── event-feed.css         # Event feed styles
+│   │   └── ...
 │   ├── App.jsx          # Root component with routing
 │   └── main.jsx         # Entry point
+├── sql/                 # Database migrations and seeds
+│   ├── migration_exclusivity.sql  # Adds exclusivity fields
+│   └── seed_events.sql            # Sample event data
 ├── .env.local           # Environment variables (not committed)
 ├── package.json         # Dependencies
 ├── vite.config.js       # Vite configuration
-├── ARCHITECTURE.md      # This file
-├── SPECIFICATIONS.md    # Product specs
-└── CLAUDE.md            # Workflow rules
+├── ARCHITECTURE.md      # This file - technical documentation
+├── SPECIFICATIONS.md    # Product specifications
+├── IMPLEMENTATION.md    # Event feed implementation guide
+└── CLAUDE.md            # Workflow rules for development
 ```
 
 ---
@@ -147,6 +164,10 @@ CREATE TABLE events (
   has_chat BOOLEAN DEFAULT false,
   has_qr_code BOOLEAN DEFAULT false,
 
+  -- Exclusivity Features (added in migration_exclusivity.sql)
+  max_attendees INTEGER DEFAULT NULL,      -- Limit spots (e.g., "Only 15 spots left")
+  is_invite_only BOOLEAN DEFAULT false,    -- Require approval to RSVP
+
   -- External Links
   playlist_url TEXT,
 
@@ -164,6 +185,7 @@ CREATE INDEX idx_events_date ON events(date DESC);
 CREATE INDEX idx_events_status ON events(status);
 CREATE INDEX idx_events_type ON events(type);
 CREATE INDEX idx_events_host ON events(host_id);
+CREATE INDEX idx_rsvps_user_event ON rsvps(user_id, event_id);  -- Added for exclusivity
 ```
 
 ### `rsvps` Table
@@ -394,6 +416,271 @@ supabase
   .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'rsvps' }, handleNewRSVP)
   .subscribe();
 ```
+
+---
+
+## Event Feed Architecture
+
+### Overview
+The event feed system implements an Instagram-style vertical scrolling feed with RSVP-based exclusivity mechanics. Users start with limited visibility and unlock more events by RSVPing.
+
+### Service Layer Pattern
+We use a **three-layer architecture** for clean separation of concerns:
+
+```
+Components (UI)
+    ↓ (uses hooks)
+Custom Hooks (business logic)
+    ↓ (calls services)
+Services (data access)
+    ↓ (queries Supabase)
+Supabase Database
+```
+
+**Benefits:**
+- **Maintainable**: Each layer has a single responsibility
+- **Testable**: Services can be mocked, hooks tested in isolation
+- **Reusable**: Services can be used across multiple features
+- **Type-safe**: Clear contracts between layers
+
+### Services (`src/services/`)
+
+**eventService.js** - Event CRUD operations
+```javascript
+export const eventService = {
+  getPublishedEvents(),      // Fetch all published events
+  getEventById(id),          // Get single event details
+  createEvent(eventData),    // Create new event
+  updateEvent(id, updates),  // Update existing event
+  deleteEvent(id),           // Delete event
+  subscribeToEvents(callback) // Real-time event updates
+}
+```
+
+**rsvpService.js** - RSVP operations
+```javascript
+export const rsvpService = {
+  getUserRSVPCount(userId),         // Get user's total RSVPs
+  hasRSVPed(userId, eventId),       // Check if user RSVPed to event
+  getUserRSVPs(userId),             // Get all user's RSVPs
+  getEventRSVPCount(eventId),       // Get RSVP count for event
+  createRSVP(rsvpData),             // Create new RSVP
+  cancelRSVP(userId, eventId),      // Cancel RSVP
+  subscribeToEventRSVPs(eventId, callback) // Real-time RSVP updates
+}
+```
+
+**imageService.js** - Image upload to Supabase Storage
+```javascript
+export const imageService = {
+  uploadImage(file, bucket, folder),  // Upload image, returns URL
+  deleteImage(path, bucket),          // Delete image
+  getPlaceholderImage(type)           // Get placeholder for event type
+}
+```
+
+### Global State (`src/contexts/EventContext.jsx`)
+
+**EventContext** manages global event state with real-time subscriptions:
+
+```javascript
+const EventProvider = ({ children }) => {
+  const [events, setEvents] = useState([])
+  const [userRSVPs, setUserRSVPs] = useState([])
+  const [rsvpCount, setRSVPCount] = useState(0)
+
+  // Subscribe to realtime event changes
+  useEffect(() => {
+    const unsubscribe = eventService.subscribeToEvents((payload) => {
+      handleRealtimeEventUpdate(payload)
+    })
+    return unsubscribe
+  }, [])
+
+  return (
+    <EventContext.Provider value={{
+      events,
+      userRSVPs,
+      rsvpCount,
+      refreshEvents,
+      refreshUserRSVPs
+    }}>
+      {children}
+    </EventContext.Provider>
+  )
+}
+```
+
+**Why React Context?**
+- Matches existing `AuthContext` pattern (consistency)
+- Simpler than Zustand for MVP scope
+- Sufficient for current feature set
+- Easy to migrate to Zustand later if needed
+
+### Custom Hooks
+
+**useEventFeed.js** - Exclusivity logic
+```javascript
+export const useEventFeed = () => {
+  const { events, rsvpCount } = useEvents()
+
+  // Calculate unlocked count based on RSVPs
+  const unlockedCount = useMemo(() => {
+    if (rsvpCount === 0) return 3
+    if (rsvpCount === 1) return 6
+    return 999 // All events
+  }, [rsvpCount])
+
+  const visibleEvents = events.slice(0, unlockedCount)
+  const lockedEvents = events.slice(unlockedCount)
+
+  return { visibleEvents, lockedEvents, unlockMessage }
+}
+```
+
+**useRSVP.js** - RSVP toggle with optimistic updates
+```javascript
+export const useRSVP = (eventId) => {
+  const { userRSVPs, refreshUserRSVPs } = useEvents()
+
+  const isRSVPed = useMemo(() => {
+    return userRSVPs.some(rsvp => rsvp.event_id === eventId)
+  }, [userRSVPs, eventId])
+
+  const toggleRSVP = async () => {
+    if (isRSVPed) {
+      await rsvpService.cancelRSVP(user.id, eventId)
+    } else {
+      await rsvpService.createRSVP({ event_id: eventId, user_id: user.id })
+    }
+    await refreshUserRSVPs()
+  }
+
+  return { isRSVPed, toggleRSVP, loading }
+}
+```
+
+**useEventCreate.js** - Event creation with image upload
+```javascript
+export const useEventCreate = () => {
+  const [uploadProgress, setUploadProgress] = useState(0)
+
+  const createEvent = async (eventData, coverImage) => {
+    let coverImageUrl = null
+
+    if (coverImage) {
+      setUploadProgress(25)
+      coverImageUrl = await imageService.uploadImage(coverImage)
+      setUploadProgress(50)
+    }
+
+    const newEvent = await eventService.createEvent({
+      ...eventData,
+      cover_image_url: coverImageUrl
+    })
+
+    await refreshEvents()
+    return newEvent
+  }
+
+  return { createEvent, uploadProgress, loading, error }
+}
+```
+
+### Components
+
+**EventFeed.jsx** - Feed container
+- Displays event grid (single column, mobile-first)
+- Shows unlock progress banner
+- Renders visible events + locked event teasers
+- Handles loading/error/empty states
+
+**EventCard.jsx** - Individual event card
+- Supports locked/unlocked states
+- Locked cards: blurred with lock icon overlay
+- Unlocked cards: full event details + RSVP button
+- Uses `useRSVP()` for RSVP toggle
+
+**CreateEventButton.jsx** - Floating + button
+- Fixed position (bottom-right, Instagram-style)
+- Opens CreateEventForm modal on click
+- Crimson gradient background
+
+**CreateEventForm.jsx** - Event creation modal
+- Form fields: title, description, date, time, location, type
+- Optional: max attendees, invite-only toggle
+- Image upload with preview
+- Upload progress indicator
+- Uses `useEventCreate()` hook
+
+### Exclusivity System
+
+**Tier Progression:**
+- **0 RSVPs**: See 3 events, rest locked
+- **1 RSVP**: See 6 events, rest locked
+- **2+ RSVPs**: See all events
+
+**Why client-side calculation?**
+- Faster (no backend round-trip)
+- Simpler implementation
+- Not a security concern (just UX feature)
+- Easy to adjust tiers without database changes
+
+**Locked Event Display:**
+- Blurred event card with `filter: blur(8px)`
+- Lock icon (🔒) overlay with "RSVP to unlock" text
+- Shows teaser of what's hidden (creates FOMO)
+- More engaging than simple count banner
+
+### Real-time Updates
+
+EventContext subscribes to Supabase Realtime channels:
+
+```javascript
+// Events channel - new events appear instantly
+supabase
+  .channel('events')
+  .on('postgres_changes', {
+    event: '*',
+    schema: 'public',
+    table: 'events'
+  }, handleEventChange)
+  .subscribe()
+
+// RSVP channel - counts update live
+supabase
+  .channel(`rsvps-${eventId}`)
+  .on('postgres_changes', {
+    event: '*',
+    schema: 'public',
+    table: 'rsvps',
+    filter: `event_id=eq.${eventId}`
+  }, handleRSVPChange)
+  .subscribe()
+```
+
+### Performance Optimizations
+
+- **Memoization**: `useEventFeed` uses `useMemo` for expensive calculations
+- **Optimistic Updates**: RSVP feels instant, reverts on error
+- **Lazy Loading**: Images use `loading="lazy"` attribute
+- **Efficient Queries**: Database indexes on frequently queried columns
+- **Client-side filtering**: Exclusivity logic runs in browser (no extra queries)
+
+### Styling Approach
+
+**Custom CSS with Design System** (NOT Tailwind)
+- CSS custom properties (variables) in `tokens.css`
+- Component-specific styles in `event-feed.css`
+- Mobile-first responsive breakpoints
+- Harvard Crimson color palette
+- Premium dark mode theme
+
+**Why custom CSS instead of Tailwind?**
+- Finer control over design system
+- Easier to maintain consistent spacing/colors
+- Better for complex animations (modal, transitions)
+- Cleaner JSX (no long className strings)
 
 ---
 

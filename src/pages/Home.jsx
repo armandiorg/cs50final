@@ -1,5 +1,7 @@
 import { useAuth } from '../contexts/AuthContext'
 import { Link } from 'react-router-dom'
+import EventFeed from '../components/EventFeed'
+import CreateEventButton from '../components/CreateEventButton'
 
 export default function Home() {
   const { user, profile } = useAuth()
@@ -37,31 +39,13 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Main Content */}
+      {/* Main Content - Event Feed */}
       <main className="main-content">
-        <div className="card">
-          <h2 className="h2 mb-4">
-            Welcome, {profile.full_name}!
-          </h2>
-          <p className="description mb-4">
-            Events feed coming soon...
-          </p>
-          <div className="info-grid">
-            <div className="info-row">
-              <span className="info-label">Year</span>
-              <span className="info-value">{profile.year}</span>
-            </div>
-            <div className="info-row">
-              <span className="info-label">House</span>
-              <span className="info-value">{profile.house}</span>
-            </div>
-            <div className="info-row">
-              <span className="info-label">Email</span>
-              <span className="info-value">{profile.email}</span>
-            </div>
-          </div>
-        </div>
+        <EventFeed />
       </main>
+
+      {/* Floating Create Button */}
+      <CreateEventButton />
     </div>
   )
 }

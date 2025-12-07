@@ -224,6 +224,7 @@
 button.input {
   background: var(--color-black-elevated);
   border: 2px solid var(--color-gray-600);
+  line-height: 1;  /* Prevent flex height inflation from inherited line-height: 1.5 */
 }
 
 /* Textarea */
