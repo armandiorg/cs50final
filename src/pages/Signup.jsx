@@ -2,9 +2,31 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
+import Dropdown from '../components/Dropdown'
 
 const YEARS = ['Freshman', 'Sophomore', 'Junior', 'Senior', 'Graduate']
-const HOUSES = [
+
+// Freshman dorms
+const FRESHMAN_DORMS = [
+  'Apley Court',
+  'Grays',
+  'Greenough',
+  'Hollis',
+  'Holworthy',
+  'Hurlbut',
+  'Lionel',
+  'Matthews',
+  'Mower',
+  'Pennypacker',
+  'Straus',
+  'Thayer',
+  'Weld',
+  'Wigglesworth',
+  'Other'
+]
+
+// Upperclass houses
+const UPPERCLASS_HOUSES = [
   'Adams',
   'Cabot',
   'Currier',
@@ -118,6 +140,31 @@ export default function Signup() {
     })
   }
 
+  const handleYearChange = (year) => {
+    setFormData({
+      ...formData,
+      year: year,
+      house: '', // Reset house selection when year changes
+    })
+  }
+
+  const handleHouseChange = (house) => {
+    setFormData({
+      ...formData,
+      house: house,
+    })
+  }
+
+  // Get available houses based on selected year
+  const getAvailableHouses = () => {
+    if (formData.year === 'Freshman') {
+      return FRESHMAN_DORMS
+    } else if (['Sophomore', 'Junior', 'Senior', 'Graduate'].includes(formData.year)) {
+      return UPPERCLASS_HOUSES
+    }
+    return [] // No houses available if year not selected
+  }
+
   // Step 1: Referral Code Entry
   if (step === 1) {
     return (
@@ -216,45 +263,26 @@ export default function Signup() {
 
           <div className="grid-cols-2">
             <div className="form-group">
-              <label htmlFor="year" className="label">
-                Year
-              </label>
-              <select
-                id="year"
-                name="year"
-                required
+              <Dropdown
+                label="Year"
+                options={YEARS}
                 value={formData.year}
-                onChange={handleInputChange}
-                className="input"
-              >
-                <option value="">Select</option>
-                {YEARS.map((year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                ))}
-              </select>
+                onChange={handleYearChange}
+                placeholder="Select year"
+                required
+              />
             </div>
 
             <div className="form-group">
-              <label htmlFor="house" className="label">
-                House
-              </label>
-              <select
-                id="house"
-                name="house"
-                required
+              <Dropdown
+                label="House"
+                options={getAvailableHouses()}
                 value={formData.house}
-                onChange={handleInputChange}
-                className="input"
-              >
-                <option value="">Select</option>
-                {HOUSES.map((house) => (
-                  <option key={house} value={house}>
-                    {house}
-                  </option>
-                ))}
-              </select>
+                onChange={handleHouseChange}
+                placeholder={formData.year ? "Select house" : "Select year first"}
+                disabled={!formData.year}
+                required
+              />
             </div>
           </div>
 

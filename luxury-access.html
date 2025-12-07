@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Harvard Poops - Private Access</title>
+
+  <style>
+    /* ═══════════════════════════════════════════════════════════
+       LUXURY FASHION BRAND AESTHETIC
+       Inspired by: Balenciaga, SSENSE, Dover Street Market access pages
+       ═══════════════════════════════════════════════════════════ */
+
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@300;400;500;600;700&family=Montserrat:wght@200;300;400;500;600;700&display=swap');
+
+    :root {
+      --black: #000000;
+      --white: #ffffff;
+      --crimson: #A41034;
+      --crimson-dark: #7a0c27;
+      --gray-light: #f5f5f5;
+      --gray-mid: #999999;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Montserrat', -apple-system, sans-serif;
+      background: var(--black);
+      color: var(--white);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* Noise texture overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='4' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+      padding: 40px;
+      text-align: center;
+    }
+
+    /* Logo/Brand Mark */
+    .brand-mark {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      font-weight: 300;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      margin-bottom: 120px;
+      opacity: 0;
+      animation: fadeInDown 1s cubic-bezier(0.4, 0, 0.2, 1) 0.3s forwards;
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Access Gate */
+    .access-gate {
+      opacity: 0;
+      animation: fadeIn 1s 0.6s forwards;
+    }
+
+    .access-gate.hidden {
+      display: none;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    .access-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      margin-bottom: 60px;
+      color: var(--gray-mid);
+    }
+
+    .code-input-wrapper {
+      position: relative;
+      margin-bottom: 40px;
+    }
+
+    .code-input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--white);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 24px;
+      font-weight: 200;
+      letter-spacing: 0.5em;
+      text-align: center;
+      padding: 20px 0;
+      outline: none;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      text-transform: uppercase;
+    }
+
+    .code-input::placeholder {
+      color: rgba(255, 255, 255, 0.15);
+      letter-spacing: 0.3em;
+    }
+
+    .code-input:focus {
+      border-bottom-color: var(--crimson);
+    }
+
+    .error-text {
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--crimson);
+      margin-top: 20px;
+      opacity: 0;
+      animation: fadeIn 0.3s forwards;
+    }
+
+    .hint-text {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: rgba(255, 255, 255, 0.3);
+      margin-top: 60px;
+      font-weight: 300;
+    }
+
+    .submit-btn {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: var(--white);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 16px 48px;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      margin-top: 40px;
+    }
+
+    .submit-btn:hover {
+      background: var(--white);
+      color: var(--black);
+      border-color: var(--white);
+    }
+
+    /* Main Content (After Access) */
+    .main-content {
+      display: none;
+      text-align: center;
+    }
+
+    .main-content.active {
+      display: block;
+    }
+
+    .main-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(60px, 12vw, 120px);
+      font-weight: 700;
+      font-style: italic;
+      line-height: 0.9;
+      margin-bottom: 40px;
+      background: linear-gradient(135deg, var(--crimson) 0%, #ff1744 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      opacity: 0;
+      transform: scale(0.95);
+      animation: titleZoomIn 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s forwards;
+    }
+
+    @keyframes titleZoomIn {
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .main-subtitle {
+      font-family: 'Montserrat', sans-serif;
+      font-size: clamp(12px, 2vw, 16px);
+      font-weight: 300;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 100px;
+      opacity: 0;
+      animation: fadeIn 0.8s 1s forwards;
+    }
+
+    .main-subtitle .emoji {
+      font-size: 1.3em;
+      vertical-align: middle;
+      margin: 0 8px;
+    }
+
+    .enter-btn {
+      background: var(--crimson);
+      border: none;
+      color: var(--white);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 24px 60px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      opacity: 0;
+      animation: fadeInUp 0.8s 1.4s forwards;
+      position: relative;
+      overflow: hidden;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .enter-btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .enter-btn:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .enter-btn:hover {
+      background: var(--crimson-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 40px rgba(164, 16, 52, 0.4);
+    }
+
+    .enter-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Footer Note */
+    .footer-note {
+      position: fixed;
+      bottom: 40px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.2);
+      opacity: 0;
+      animation: fadeIn 1s 2s forwards;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        padding: 30px 20px;
+      }
+
+      .brand-mark {
+        font-size: 12px;
+        margin-bottom: 80px;
+      }
+
+      .code-input {
+        font-size: 20px;
+        letter-spacing: 0.3em;
+      }
+
+      .main-title {
+        font-size: 56px;
+      }
+
+      .main-subtitle {
+        font-size: 11px;
+        margin-bottom: 60px;
+      }
+
+      .enter-btn {
+        width: 100%;
+        padding: 20px 40px;
+      }
+
+      .footer-note {
+        bottom: 20px;
+        padding: 0 20px;
+      }
+    }
+
+    /* Loading indicator */
+    .loading {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 2px;
+      height: 60px;
+      background: linear-gradient(to bottom, transparent, var(--crimson), transparent);
+      animation: scan 2s ease-in-out infinite;
+      opacity: 0;
+    }
+
+    .loading.active {
+      opacity: 1;
+    }
+
+    @keyframes scan {
+      0%, 100% { transform: translate(-50%, -50%) scaleY(0.5); }
+      50% { transform: translate(-50%, -50%) scaleY(1); }
+    }
+  </style>
+</head>
+<body>
+  <div class="loading" id="loading"></div>
+
+  <div class="container">
+    <div class="brand-mark">Harvard University</div>
+
+    <!-- Access Gate -->
+    <div class="access-gate" id="accessGate">
+      <div class="access-title">Private Access Required</div>
+
+      <div class="code-input-wrapper">
+        <input
+          type="text"
+          class="code-input"
+          id="codeInput"
+          placeholder="••••"
+          maxlength="20"
+          autocomplete="off"
+          spellcheck="false"
+        >
+      </div>
+
+      <div id="errorText"></div>
+
+      <button class="submit-btn" onclick="validateCode()">Proceed</button>
+
+      <div class="hint-text">
+        Access Code: VERITAS or HARVARD2025
+      </div>
+    </div>
+
+    <!-- Main Content (After Access) -->
+    <div class="main-content" id="mainContent">
+      <h1 class="main-title">Harvard Poops</h1>
+
+      <p class="main-subtitle">
+        Where <span class="emoji">💩</span> happens at Harvard
+      </p>
+
+      <button class="enter-btn" onclick="window.location.href='partiful-style-demo.html'">
+        Enter Platform
+      </button>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    Est. 2025 — Cambridge, MA
+  </div>
+
+  <script>
+    const validCodes = ['VERITAS', 'HARVARD2025', 'HARVARD', 'CRIMSON', 'POOPS', '1636'];
+    const codeInput = document.getElementById('codeInput');
+    const accessGate = document.getElementById('accessGate');
+    const mainContent = document.getElementById('mainContent');
+    const errorText = document.getElementById('errorText');
+    const loading = document.getElementById('loading');
+
+    // Auto-focus input
+    window.addEventListener('load', () => {
+      codeInput.focus();
+    });
+
+    // Enter key submission
+    codeInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        validateCode();
+      }
+    });
+
+    function validateCode() {
+      const code = codeInput.value.trim().toUpperCase();
+
+      if (validCodes.includes(code)) {
+        grantAccess();
+      } else {
+        showError();
+      }
+    }
+
+    function showError() {
+      errorText.innerHTML = '<div class="error-text">Invalid Access Code</div>';
+      codeInput.value = '';
+      codeInput.style.borderBottomColor = 'var(--crimson)';
+
+      setTimeout(() => {
+        codeInput.style.borderBottomColor = 'rgba(255, 255, 255, 0.2)';
+      }, 2000);
+    }
+
+    function grantAccess() {
+      // Show loading
+      loading.classList.add('active');
+
+      setTimeout(() => {
+        // Hide access gate
+        accessGate.style.opacity = '0';
+        accessGate.style.transform = 'translateY(-20px)';
+
+        setTimeout(() => {
+          accessGate.classList.add('hidden');
+          mainContent.classList.add('active');
+          loading.classList.remove('active');
+        }, 400);
+      }, 1200);
+    }
+
+    // Quick access Easter egg
+    document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.shiftKey && e.key === 'H') {
+        codeInput.value = 'VERITAS';
+        validateCode();
+      }
+    });
+  </script>
+</body>
+</html>

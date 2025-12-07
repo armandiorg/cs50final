@@ -199,7 +199,7 @@
   background: var(--color-black-elevated);
   border: 2px solid var(--color-gray-600);
   border-radius: var(--radius-lg);
-  padding: 16px 20px;
+  padding: 10px 16px;
   transition: all var(--duration-base) var(--ease-standard);
   min-height: 44px;
 }
@@ -218,6 +218,12 @@
 .input:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Fix for button.input - override global button reset */
+button.input {
+  background: var(--color-black-elevated);
+  border: 2px solid var(--color-gray-600);
 }
 
 /* Textarea */
