@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Harvard Poops - Refined Premium Design System Showcase">
+  <title>Style Guide - Harvard Poops</title>
+
+  <!-- Import all styles -->
+  <link rel="stylesheet" href="src/styles/index.css">
+
+  <style>
+    /* Inline styles for standalone HTML demo */
+    .demo-container {
+      padding-bottom: 100px; /* Space for bottom nav */
+    }
+
+    .hero-demo {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--gradient-dark);
+      background-image: var(--gradient-mesh);
+      text-align: center;
+      padding: var(--space-20) var(--space-4);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-demo::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, var(--color-crimson-glow) 0%, transparent 70%);
+      opacity: 0.3;
+      animation: pulse 4s ease-in-out infinite;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+    }
+
+    .section-demo {
+      margin-bottom: var(--space-20);
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: var(--text-3xl);
+      font-weight: var(--weight-semibold);
+      color: var(--color-gray-100);
+      margin-bottom: var(--space-3);
+      position: relative;
+      display: inline-block;
+    }
+
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 0;
+      width: 60px;
+      height: 3px;
+      background: var(--gradient-crimson);
+    }
+
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: var(--space-4);
+      margin: var(--space-6) 0;
+    }
+
+    .color-card {
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background: var(--color-black-soft);
+      border: 1px solid var(--color-gray-700);
+      transition: all var(--duration-base) var(--ease-standard);
+    }
+
+    .color-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-base);
+    }
+
+    .color-swatch {
+      width: 100%;
+      height: 100px;
+    }
+
+    .color-info {
+      padding: var(--space-3);
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-container">
+    <!-- Hero Section -->
+    <section class="hero-demo">
+      <div class="hero-content animate-slide-up">
+        <h1 class="text-gradient-crimson">
+          Harvard Poops
+        </h1>
+        <p style="font-size: var(--text-xl); font-weight: var(--weight-medium); color: var(--color-gray-400); letter-spacing: var(--tracking-wide); text-transform: uppercase; margin-bottom: var(--space-6);">
+          Refined Premium Design System
+        </p>
+        <p class="description" style="max-width: 600px; margin: 0 auto var(--space-8);">
+          A dark, mysterious aesthetic combining Harvard's storied crimson tradition
+          with contemporary editorial elegance. Built for mobile-first experiences.
+        </p>
+        <div class="flex gap-4 items-center justify-center">
+          <button class="btn btn-primary">Explore Events</button>
+          <button class="btn btn-secondary">Learn More</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container py-20">
+      <!-- Colors Section -->
+      <section class="section-demo">
+        <h2 class="section-title">Color Palette</h2>
+        <p class="text-secondary mb-8">
+          Deep blacks, Harvard crimson, and metallic accents
+        </p>
+
+        <h3 class="h3">Primary Blacks</h3>
+        <div class="color-grid">
+          <div class="color-card">
+            <div class="color-swatch" style="background: #000000;"></div>
+            <div class="color-info">
+              <div class="label">Black True</div>
+              <div class="text-sm text-muted">#000000</div>
+            </div>
+          </div>
+          <div class="color-card">
+            <div class="color-swatch" style="background: #0A0A0A;"></div>
+            <div class="color-info">
+              <div class="label">Black Rich</div>
+              <div class="text-sm text-muted">#0A0A0A</div>
+            </div>
+          </div>
+          <div class="color-card">
+            <div class="color-swatch" style="background: #141414;"></div>
+            <div class="color-info">
+              <div class="label">Black Soft</div>
+              <div class="text-sm text-muted">#141414</div>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="h3 mt-8">Harvard Crimson</h3>
+        <div class="color-grid">
+          <div class="color-card">
+            <div class="color-swatch" style="background: #8B0A1F;"></div>
+            <div class="color-info">
+              <div class="label">Crimson Deep</div>
+              <div class="text-sm text-muted">#8B0A1F</div>
+            </div>
+          </div>
+          <div class="color-card">
+            <div class="color-swatch" style="background: #A41034;"></div>
+            <div class="color-info">
+              <div class="label">Crimson Primary</div>
+              <div class="text-sm text-muted">#A41034</div>
+            </div>
+          </div>
+          <div class="color-card">
+            <div class="color-swatch" style="background: #C41E3A;"></div>
+            <div class="color-info">
+              <div class="label">Crimson Bright</div>
+              <div class="text-sm text-muted">#C41E3A</div>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="h3 mt-8">Metallic Accents</h3>
+        <div class="color-grid">
+          <div class="color-card">
+            <div class="color-swatch" style="background: #D4AF37;"></div>
+            <div class="color-info">
+              <div class="label">Gold Champagne</div>
+              <div class="text-sm text-muted">#D4AF37</div>
+            </div>
+          </div>
+          <div class="color-card">
+            <div class="color-swatch" style="background: #C0C0C0;"></div>
+            <div class="color-info">
+              <div class="label">Silver Light</div>
+              <div class="text-sm text-muted">#C0C0C0</div>
+            </div>
+          </div>
+          <div class="color-card">
+            <div class="color-swatch" style="background: #8C7853;"></div>
+            <div class="color-info">
+              <div class="label">Bronze</div>
+              <div class="text-sm text-muted">#8C7853</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="divider-crimson"></div>
+
+      <!-- Typography Section -->
+      <section class="section-demo">
+        <h2 class="section-title">Typography</h2>
+        <p class="text-secondary mb-8">
+          Editorial elegance with Playfair Display and Inter
+        </p>
+
+        <div class="card p-8 mb-6">
+          <h1 class="h1">Heading 1 - Display Large</h1>
+          <h2 class="h2">Heading 2 - Page Title</h2>
+          <h3 class="h3">Heading 3 - Section Heading</h3>
+          <h4 class="h4">Heading 4 - Subsection</h4>
+          <p class="text-xl">Text XL - Emphasized body text</p>
+          <p class="text-base">Text Base (16px) - Default body text with comfortable reading</p>
+          <p class="text-sm">Text SM (14px) - Secondary information</p>
+        </div>
+
+        <div class="card p-8">
+          <div class="pull-quote">
+            "An investment in knowledge pays the best interest."
+          </div>
+        </div>
+      </section>
+
+      <div class="divider-crimson"></div>
+
+      <!-- Buttons Section -->
+      <section class="section-demo">
+        <h2 class="section-title">Buttons</h2>
+        <p class="text-secondary mb-8">
+          Clear hierarchy with premium interactions
+        </p>
+
+        <div class="card p-8">
+          <div class="flex flex-col gap-6">
+            <div class="flex gap-4 flex-wrap">
+              <button class="btn btn-primary">Primary Button</button>
+              <button class="btn btn-secondary">Secondary Button</button>
+              <button class="btn btn-tertiary">Tertiary Button</button>
+            </div>
+            <div class="flex gap-4 flex-wrap">
+              <button class="btn btn-primary btn-sm">Small</button>
+              <button class="btn btn-primary">Regular</button>
+              <button class="btn btn-primary btn-lg">Large</button>
+            </div>
+            <div class="flex gap-4">
+              <button class="btn btn-primary btn-icon" aria-label="Like">❤️</button>
+              <button class="btn btn-secondary btn-icon" aria-label="Star">⭐</button>
+              <button class="btn btn-tertiary btn-icon" aria-label="Share">📤</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="divider-crimson"></div>
+
+      <!-- Cards Section -->
+      <section class="section-demo">
+        <h2 class="section-title">Cards & Event Components</h2>
+        <p class="text-secondary mb-8">
+          Elevated surfaces with crimson glow effects
+        </p>
+
+        <div class="grid md:grid-cols-2 gap-6 stagger-children">
+          <div class="card hover-lift">
+            <h3 class="h3 mb-3">Standard Card</h3>
+            <p class="description mb-4">
+              Cards use subtle borders, soft shadows, and a crimson glow on hover.
+              Notice the elevation and depth.
+            </p>
+            <div class="flex gap-3">
+              <button class="btn btn-primary btn-sm">Action</button>
+              <button class="btn btn-tertiary btn-sm">Cancel</button>
+            </div>
+          </div>
+
+          <div class="card card-premium hover-lift">
+            <h3 class="h3 mb-3">Premium Card</h3>
+            <p class="description mb-4">
+              Premium cards feature gold badges and special border treatment
+              for exclusive content.
+            </p>
+            <div class="flex gap-2 flex-wrap">
+              <span class="badge badge-gold">EXCLUSIVE</span>
+              <span class="badge badge-crimson">FEATURED</span>
+            </div>
+          </div>
+
+          <div class="event-card">
+            <div class="event-card-image">
+              <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #8B0A1F 0%, #C41E3A 100%); display: flex; align-items: center; justify-content: center; font-size: 64px;">
+                🎉
+              </div>
+            </div>
+            <div class="event-card-content">
+              <div class="flex gap-2 mb-3 flex-wrap">
+                <span class="badge badge-live">LIVE</span>
+                <span class="badge badge-crimson">PARTY</span>
+              </div>
+              <h3 style="font-family: var(--font-display); font-size: var(--text-2xl); margin-bottom: var(--space-3);">
+                Final Club Mixer
+              </h3>
+              <div class="metadata mb-4">
+                Tonight
+                <span class="metadata-separator"></span>
+                9:00 PM
+                <span class="metadata-separator"></span>
+                The Fly Club
+              </div>
+              <p class="description mb-4">
+                An exclusive evening with Harvard's finest. Formal attire required.
+              </p>
+              <button class="btn btn-primary" style="width: 100%;">RSVP Now</button>
+            </div>
+          </div>
+
+          <div class="event-card">
+            <div class="event-card-image">
+              <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #1A3A5F 0%, #2D5F3F 100%); display: flex; align-items: center; justify-content: center; font-size: 64px;">
+                🎵
+              </div>
+            </div>
+            <div class="event-card-content">
+              <div class="flex gap-2 mb-3 flex-wrap">
+                <span class="badge badge-gold">PREMIUM</span>
+                <span class="badge badge-gray">MUSIC</span>
+              </div>
+              <h3 style="font-family: var(--font-display); font-size: var(--text-2xl); margin-bottom: var(--space-3);">
+                Jazz Night at Sanders
+              </h3>
+              <div class="metadata mb-4">
+                Dec 15
+                <span class="metadata-separator"></span>
+                8:00 PM
+                <span class="metadata-separator"></span>
+                Sanders Theatre
+              </div>
+              <p class="description mb-4">
+                An intimate evening of jazz in the historic Sanders Theatre.
+              </p>
+              <button class="btn btn-secondary" style="width: 100%;">Learn More</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="divider-crimson"></div>
+
+      <!-- Forms Section -->
+      <section class="section-demo">
+        <h2 class="section-title">Forms & Inputs</h2>
+        <p class="text-secondary mb-8">
+          Refined inputs with elegant focus states
+        </p>
+
+        <div class="card p-8" style="max-width: 600px; margin: 0 auto;">
+          <h3 class="h3 mb-6">Event RSVP Form</h3>
+
+          <div class="form-group">
+            <label class="label label-required">Full Name</label>
+            <input type="text" class="input" placeholder="Enter your name">
+          </div>
+
+          <div class="form-group">
+            <label class="label label-required">Email</label>
+            <input type="email" class="input" placeholder="you@harvard.edu">
+          </div>
+
+          <div class="form-group">
+            <label class="label">Additional Comments</label>
+            <textarea class="input textarea" placeholder="Any special requests?"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" class="checkbox">
+              <span class="text-base text-secondary">
+                I agree to receive event updates
+              </span>
+            </label>
+          </div>
+
+          <button class="btn btn-primary" style="width: 100%;">Submit RSVP</button>
+        </div>
+      </section>
+
+      <div class="divider-crimson"></div>
+
+      <!-- Interactive Components -->
+      <section class="section-demo">
+        <h2 class="section-title">Interactive Components</h2>
+        <p class="text-secondary mb-8">
+          Progress bars, badges, and loading states
+        </p>
+
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="card p-6">
+            <h3 class="h3 mb-4">Progress Bar</h3>
+            <div class="flex justify-between text-sm mb-2">
+              <span>Event Capacity</span>
+              <span class="text-crimson">65%</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-bar-fill" style="width: 65%;"></div>
+            </div>
+          </div>
+
+          <div class="card p-6">
+            <h3 class="h3 mb-4">Badges & Tags</h3>
+            <div class="flex flex-wrap gap-3">
+              <span class="badge badge-crimson">FEATURED</span>
+              <span class="badge badge-gold">PREMIUM</span>
+              <span class="badge badge-live">LIVE</span>
+              <span class="badge badge-success">CONFIRMED</span>
+            </div>
+          </div>
+
+          <div class="card p-6">
+            <h3 class="h3 mb-4">Avatars</h3>
+            <div class="flex items-center gap-4">
+              <div class="avatar avatar-sm">AS</div>
+              <div class="avatar">JD</div>
+              <div class="avatar avatar-lg">MK</div>
+            </div>
+          </div>
+
+          <div class="card p-6">
+            <h3 class="h3 mb-4">Loading States</h3>
+            <div class="flex items-center gap-6 mb-6">
+              <div class="spinner spinner-sm"></div>
+              <div class="spinner"></div>
+            </div>
+            <div class="dots-loader">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation (Mobile-First Demo) -->
+  <nav class="bottom-nav">
+    <a href="#" class="bottom-nav-item active">
+      <div class="bottom-nav-icon">🏠</div>
+      <span>Home</span>
+    </a>
+    <a href="#" class="bottom-nav-item">
+      <div class="bottom-nav-icon">🔍</div>
+      <span>Explore</span>
+    </a>
+    <a href="#" class="bottom-nav-item">
+      <div class="bottom-nav-icon">➕</div>
+      <span>Create</span>
+    </a>
+    <a href="#" class="bottom-nav-item">
+      <div class="bottom-nav-icon">👤</div>
+      <span>Profile</span>
+    </a>
+  </nav>
+</body>
+</html>

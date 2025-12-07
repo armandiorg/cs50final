@@ -3,20 +3,26 @@
 ## Tech Stack
 
 - **Frontend**: React + Vite
+- **Styling**: Tailwind CSS
 - **Backend/Database**: Supabase (PostgreSQL)
-- **Deployment**: Railway
+- **Deployment**: Vercel
 - **Domain**: harvardpoops.com
-- **Styling**: [TBD - Tailwind CSS / vanilla CSS / styled-components]
-- **State Management**: [TBD - React Context / Zustand / Redux]
+- **State Management**: React Context (for auth/theme) + Supabase real-time subscriptions
 
 ---
 
 ## Architecture Overview
 
-Single-page React application that communicates directly with Supabase. No separate backend server needed - Supabase provides the database, authentication, real-time capabilities, and storage.
+React application that communicates directly with Supabase. No separate backend server needed, Supabase provides the database, authentication, real-time capabilities, and storage.
+
+**Mobile-First Design Philosophy**
+- **Primary device**: Students access the site on mobile phones (iPhone/Android)
+- **Design approach**: Build for mobile screens first, then enhance for desktop
+- **Performance goal**: Fast loading on 4G/5G cellular connections
+- **UI decisions prioritize mobile UX** (touch targets, readability, navigation)
 
 **Data Flow:**
-1. User visits harvardpoops.com
+1. User visits harvardpoops.com (typically on mobile)
 2. React app loads in browser
 3. App fetches event data from Supabase API using Supabase JS client
 4. User interactions (RSVP, voting, chat) update Supabase directly
@@ -26,8 +32,10 @@ Single-page React application that communicates directly with Supabase. No separ
 - **Speed**: 12-hour CS50 timeline requires rapid development
 - **Simplicity**: Single repo, no separate backend server to manage
 - **Real-time**: Supabase provides live voting/chat out of the box
-- **Scalability**: PostgreSQL handles growth, Railway auto-scales deployment
+- **Scalability**: PostgreSQL handles growth, Vercel auto-scales deployment globally
 - **Collaboration**: One codebase makes it easier for two people to work together
+- **Mobile-optimized**: React + Tailwind CSS work well for responsive mobile-first design
+- **Developer Experience**: Vite's HMR + Tailwind's utility classes = fast iteration
 
 ---
 
@@ -46,18 +54,29 @@ Single-page React application that communicates directly with Supabase. No separ
 - **PostgreSQL**: More robust than SQLite for production
 - **Row Level Security (RLS)**: Database-level permissions prevent unauthorized access
 
-### Why Railway?
+### Why Vercel?
 - **Auto-deployment**: Pushes to GitHub main branch automatically deploy
-- **Build automation**: Runs `npm run build` and serves static files
-- **Custom domains**: Easy to connect harvardpoops.com
-- **Free tier**: Good for CS50 project scope
-- **No complex config**: Works out of the box for Vite apps
+- **Zero-config**: Detects Vite projects automatically, no build config needed
+- **Edge Network**: Global CDN for fast load times on mobile (critical for our use case)
+- **Custom domains**: Easy to connect harvardpoops.com with SSL included
+- **Free tier**: Generous limits for CS50 project scope
+- **Preview deployments**: Every PR gets a unique URL for testing
+- **Optimized for React**: Built by the team that created Next.js, excellent React support
+
+### Why Tailwind CSS?
+- **Mobile-first by default**: Utility classes work perfectly with mobile-first responsive design
+- **Fast development**: No need to write custom CSS for every component
+- **Consistent design**: Built-in design system (spacing, colors, typography)
+- **Small bundle size**: Purges unused CSS in production (only ships what you use)
+- **Responsive utilities**: `sm:`, `md:`, `lg:` prefixes make breakpoints easy
+- **Touch-friendly**: Easy to implement 44px tap targets with utilities like `min-h-[44px]`
+- **No naming conflicts**: Utility classes prevent CSS specificity issues
 
 ### Why one monorepo?
 - **Simplicity**: Everything in one place, easier to reason about
 - **Fast iteration**: No need to coordinate frontend/backend repos
 - **Easier collaboration**: Both developers work in same codebase
-- **Deployment**: One repo to deploy, one Railway service
+- **Deployment**: One repo to deploy, one Vercel project
 
 ---
 
@@ -380,37 +399,240 @@ supabase
 
 ## Deployment
 
-### Railway Configuration
+### Vercel Configuration
 
-**Build Command:**
+**Framework Preset:** Vite (auto-detected)
+
+**Build Command:** (auto-detected from package.json)
 ```bash
 npm run build
+# or: vite build
 ```
 
-**Start Command:**
-```bash
-npm run preview
-# OR serve dist/ with a static server
-```
+**Output Directory:** `dist/` (auto-detected)
 
-**Environment Variables (Set in Railway Dashboard):**
-- `VITE_SUPABASE_URL`
-- `VITE_SUPABASE_ANON_KEY`
-- `VITE_ADMIN_REFERRAL_CODE`
+**Environment Variables (Set in Vercel Dashboard):**
+- `VITE_SUPABASE_URL` - Your Supabase project URL
+- `VITE_SUPABASE_ANON_KEY` - Your Supabase anon/public key
+- `VITE_ADMIN_REFERRAL_CODE` - Admin access code (optional)
 
 ### Deployment Flow
 1. Push code to GitHub `main` branch
-2. Railway detects changes via webhook
-3. Railway runs `npm install` and `npm run build`
-4. Railway serves `dist/` folder
-5. Changes live at harvardpoops.com within ~2 minutes
+2. Vercel detects changes via webhook
+3. Vercel runs `npm install` and `npm run build` automatically
+4. Vercel deploys to global edge network
+5. Changes live at harvardpoops.com within ~30 seconds
+6. Preview URLs created for every PR/branch
 
 ### Custom Domain Setup
-1. In Railway dashboard: Settings → Domains → Add Custom Domain
-2. Add `harvardpoops.com`
+1. In Vercel dashboard: Settings → Domains → Add Domain
+2. Add `harvardpoops.com` and `www.harvardpoops.com`
 3. Update DNS records at domain registrar:
-   - CNAME record: `www` → `[railway-subdomain].up.railway.app`
-   - A record: `@` → Railway IP address
+   - **Option A (Recommended):** Point nameservers to Vercel
+   - **Option B:** Add CNAME record: `www` → `cname.vercel-dns.com`
+   - Add A records for apex domain (Vercel provides IPs)
+4. SSL certificates generated automatically
+
+---
+
+## Mobile-First Implementation Guidelines
+
+### Design Approach
+**Build UI components with mobile as the primary device, then enhance for larger screens.**
+
+**Screen Size Targets:**
+- **Mobile (Primary)**: 375px - 428px width (iPhone SE to iPhone Pro Max)
+- **Tablet (Secondary)**: 768px - 1024px width
+- **Desktop (Tertiary)**: 1280px+ width
+
+**Mobile-First with Tailwind CSS:**
+```jsx
+// Mobile-first: base classes apply to mobile, then enhance with breakpoints
+<div className="p-4 text-base md:p-6 xl:max-w-screen-xl xl:mx-auto">
+  {/*
+    p-4 = padding: 16px (mobile base)
+    text-base = font-size: 16px
+    md:p-6 = padding: 24px on tablet (768px+)
+    xl:max-w-screen-xl = max-width: 1280px on desktop
+    xl:mx-auto = center on desktop
+  */}
+  Event Card Content
+</div>
+```
+
+**Tailwind Breakpoints:**
+- `sm:` - 640px and up
+- `md:` - 768px and up
+- `lg:` - 1024px and up
+- `xl:` - 1280px and up
+- `2xl:` - 1536px and up
+
+### Touch-Friendly Interactions
+**Minimum tap target size: 44x44px** (iOS Human Interface Guidelines)
+
+**Tailwind Examples:**
+```jsx
+// Buttons - min 44px height
+<button className="min-h-[44px] px-6 py-3 text-base bg-blue-600 text-white rounded-lg">
+  RSVP to Event
+</button>
+
+// Form inputs - 16px text prevents iOS auto-zoom
+<input
+  type="text"
+  className="min-h-[44px] px-3 text-base border border-gray-300 rounded-lg w-full"
+  placeholder="Event title"
+/>
+
+// Textarea
+<textarea
+  className="min-h-[44px] px-3 py-3 text-base border border-gray-300 rounded-lg w-full"
+  placeholder="Event description"
+/>
+
+// Event cards - tappable area
+<div className="min-h-[80px] p-4 bg-white rounded-lg shadow-sm active:bg-gray-50">
+  Event Card Content
+</div>
+```
+
+**Key Tailwind Utilities for Touch:**
+- `min-h-[44px]` - Minimum height of 44px
+- `text-base` - 16px font (prevents iOS zoom)
+- `active:bg-gray-50` - Visual feedback on tap
+- `px-6 py-3` - Generous padding for larger tap area
+
+### Typography for Mobile
+**Keep text readable without zooming:**
+- **Body text**: 16px or larger (prevents iOS auto-zoom)
+- **Small text**: 14px or larger (timestamps, metadata)
+- **Headings**: 20px - 32px
+- **Line height**: 1.5 - 1.6 for comfortable reading
+
+**Tailwind Typography Classes:**
+```jsx
+// Body text
+<p className="text-base leading-relaxed">Event description goes here...</p>
+
+// Small text (timestamps, metadata)
+<span className="text-sm text-gray-600">Dec 10, 2025 • 9:00 PM</span>
+
+// Headings
+<h1 className="text-3xl font-bold">Event Title</h1>  {/* 30px */}
+<h2 className="text-2xl font-semibold">Section</h2>  {/* 24px */}
+<h3 className="text-xl font-medium">Subsection</h3>  {/* 20px */}
+```
+
+**Tailwind Text Size Reference:**
+- `text-sm` - 14px (minimum for readable text)
+- `text-base` - 16px (body text, form inputs)
+- `text-lg` - 18px
+- `text-xl` - 20px
+- `text-2xl` - 24px
+- `text-3xl` - 30px
+
+### Mobile Performance Optimization
+**Target: < 3 second load on 4G (Fast 3G in DevTools)**
+
+**Strategies:**
+1. **Image Optimization**:
+   - Use WebP format for cover images
+   - Compress to < 200KB per image
+   - Lazy load images below the fold
+
+2. **Code Splitting**:
+   ```javascript
+   // Lazy load admin/host dashboards
+   const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+   const HostDashboard = lazy(() => import('./pages/HostDashboard'));
+   ```
+
+3. **Bundle Size**:
+   - Keep main bundle < 200KB gzipped
+   - Use tree-shaking (Vite does this automatically)
+   - Avoid heavy libraries
+
+4. **Critical CSS**:
+   - Inline above-the-fold CSS
+   - Defer non-critical styles
+
+### Mobile Navigation Patterns
+**Recommended: Bottom tab bar for primary navigation** (thumb-friendly)
+
+**Tailwind Example:**
+```jsx
+import { NavLink } from 'react-router-dom';
+
+function BottomNav() {
+  return (
+    <nav className="fixed bottom-0 w-full h-16 flex justify-around items-center bg-white border-t border-gray-200">
+      <NavLink
+        to="/"
+        className="min-w-[44px] min-h-[44px] flex items-center justify-center"
+      >
+        Events
+      </NavLink>
+      <NavLink
+        to="/create"
+        className="min-w-[44px] min-h-[44px] flex items-center justify-center"
+      >
+        Create
+      </NavLink>
+      <NavLink
+        to="/profile"
+        className="min-w-[44px] min-h-[44px] flex items-center justify-center"
+      >
+        Profile
+      </NavLink>
+    </nav>
+  );
+}
+```
+
+**Key Tailwind Classes:**
+- `fixed bottom-0` - Stick to bottom of screen
+- `w-full h-16` - Full width, 64px height
+- `flex justify-around items-center` - Space navigation items evenly
+- `border-t border-gray-200` - Top border for visual separation
+
+### Responsive Images
+**Use responsive images for different screen densities:**
+
+```jsx
+<img
+  src="event-cover-1x.jpg"
+  srcSet="event-cover-1x.jpg 1x, event-cover-2x.jpg 2x"
+  alt="Event cover"
+  loading="lazy"
+/>
+```
+
+### Testing Checklist
+**Before deploying any UI changes, test on:**
+- [ ] iPhone SE (375px - smallest modern iPhone)
+- [ ] iPhone 14 Pro (393px)
+- [ ] Android (360px - 412px)
+- [ ] iPad (768px)
+- [ ] Desktop (1280px+)
+
+**Use Chrome DevTools Device Mode:**
+- Test with "Fast 3G" throttling
+- Enable touch emulation
+- Test both portrait and landscape
+
+### Mobile-Specific Features to Consider
+- **Pull-to-refresh**: For event feed updates
+- **Swipe gestures**: For navigating between events or voting options
+- **Native share**: Use Web Share API for sharing events
+  ```javascript
+  if (navigator.share) {
+    navigator.share({
+      title: event.title,
+      url: `https://harvardpoops.com/event/${event.id}`
+    });
+  }
+  ```
+- **Add to Home Screen**: PWA capabilities (future enhancement)
 
 ---
 
@@ -520,5 +742,5 @@ As the app grows, consider:
 
 ---
 
-*Last Updated*: 2025-12-06
-*Status*: Initial architecture documentation (project not yet built)
+*Last Updated*: 2025-12-06 (Updated tech stack: Vercel deployment + Tailwind CSS)
+*Status*: Architecture documentation for React + Tailwind + Supabase + Vercel stack

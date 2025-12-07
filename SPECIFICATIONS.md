@@ -31,9 +31,6 @@ The project will be implemented as a React application built with Vite, with eve
 - **Check** what's happening before going out on a given night
 
 ### Hosts (who are also students)
-Hosts are students who create and manage their own events on the platform. They have elevated permissions to build event pages with customizable interactive features.
-
-**Core Capabilities**:
 - **Create Events**: Build event pages from scratch with all necessary details
 - **Event Details Management**: Set title, date, time, location, description, cover images
 - **Interactive Features Toggle**: Choose which features to enable for their event:
@@ -137,7 +134,12 @@ Hosts are students who create and manage their own events on the platform. They 
 - **Consistent experience**: Cohesive design across all pages
 - **Fun and clear UX**: Easy to navigate, enjoyable to use
 - **Reliable**: Stable enough for students to trust before heading out
-- **Mobile-first**: Optimized for phone usage (primary student device)
+- **Mobile-first priority**: The website should be optimized for mobile phones as the primary device
+  - Students primarily access the site on their phones (before/during events)
+  - Touch-friendly interactions (large tap targets, swipe gestures)
+  - Fast loading on cellular connections
+  - Readable text without zooming
+  - Desktop is secondary - mobile experience comes first
 
 ---
 
@@ -201,4 +203,4 @@ Hosts are students who create and manage their own events on the platform. They 
 
 ---
 
-*Last Updated*: 2025-12-06
+*Last Updated*: 2025-12-06 (Added mobile-first priority details)
