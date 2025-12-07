@@ -17,15 +17,22 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null)
-      if (session?.user) {
-        fetchProfile(session.user.id)
-      } else {
+    // Get initial session with proper async/await to prevent race conditions
+    const initAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        setUser(session?.user ?? null)
+        if (session?.user) {
+          await fetchProfile(session.user.id)
+        }
+      } catch (err) {
+        console.error('Auth initialization failed:', err)
+      } finally {
+        // ALWAYS set loading to false, even if errors occur
         setLoading(false)
       }
-    })
+    }
+    initAuth()
 
     // Listen for auth changes
     const {

@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
+import { EventProvider } from './contexts/EventContext'
+import MobileOnlyGuard from './components/MobileOnlyGuard'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
@@ -94,7 +96,11 @@ export default function App() {
   return (
     <Router>
       <AuthProvider>
-        <AppRoutes />
+        <EventProvider>
+          <MobileOnlyGuard>
+            <AppRoutes />
+          </MobileOnlyGuard>
+        </EventProvider>
       </AuthProvider>
     </Router>
   )

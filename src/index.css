@@ -6,6 +6,9 @@
 /* Import the premium design system */
 @import './styles/index.css';
 
+/* Import event feed styles */
+@import './styles/event-feed.css';
+
 /* Additional utility classes referenced in STYLE.md */
 .text-center {
   text-align: center;

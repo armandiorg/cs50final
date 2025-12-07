@@ -171,21 +171,41 @@ The project will be implemented as a React application built with Vite, with eve
 ## Current Status
 
 **Completed** ✅:
-- Basic event system with database
-- Referral code authentication
-- Admin interface for creating/editing events
-- Live voting (Halloween event implementation)
+- ✅ **Authentication System**: Referral code-based signup with Harvard email validation
+- ✅ **Event Feed**: Instagram-style vertical scrolling feed (mobile-first)
+- ✅ **RSVP System**: Users can RSVP to events with instant feedback
+- ✅ **Exclusivity Mechanics**:
+  - 0 RSVPs → 3 events visible, rest locked
+  - 1 RSVP → 6 events visible, rest locked
+  - 2+ RSVPs → all events unlocked
+- ✅ **Event Creation**:
+  - Floating + button (Instagram-style)
+  - Full event creation form (title, description, date, time, location, type)
+  - Cover image upload to Supabase Storage
+  - Optional fields: max attendees, invite-only toggle
+- ✅ **Event Cards**:
+  - Unlocked cards show full event details + RSVP button
+  - Locked cards show blurred teaser with lock icon
+- ✅ **Real-time Updates**: Supabase Realtime subscriptions for events and RSVPs
+- ✅ **Database**: Supabase PostgreSQL with Row Level Security (RLS)
+- ✅ **Service Layer**: Clean architecture (services → hooks → components)
+- ✅ **Custom Design System**: CSS variables with Harvard Crimson theme
 
 **In Progress** 🚧:
-- Partner event track
-- Partner submission form
-- QR code integration system
+- 🚧 **Event Detail Page**: Individual event page with full details
+- 🚧 **Event Editing**: Edit/delete own events
+- 🚧 **Limited Spots Logic**: Enforce max_attendees, show "X spots left"
+- 🚧 **Invite-Only Events**: Pending/approved RSVP states
 
 **Planned** 📋:
-- Event filtering by tag/date
-- About and Rules pages
-- Enhanced responsive design
-- Production deployment optimization
+- 📋 **Search & Filters**: Search by title/location, filter by type/date
+- 📋 **Live Voting**: Real-time voting for contests
+- 📋 **QR Code Integration**: QR codes for check-ins
+- 📋 **Pre-Party Chat**: Live chat before events
+- 📋 **Playlist Integration**: Link Spotify/Apple Music playlists
+- 📋 **Partner Event Track**: Partner event submission + admin approval
+- 📋 **About and Rules Pages**: Site information and guidelines
+- 📋 **Event Analytics**: RSVP counts, engagement metrics
 
 ---
 
@@ -203,4 +223,4 @@ The project will be implemented as a React application built with Vite, with eve
 
 ---
 
-*Last Updated*: 2025-12-06 (Added mobile-first priority details)
+*Last Updated*: 2025-12-07 (Event feed + RSVP + exclusivity system complete)
