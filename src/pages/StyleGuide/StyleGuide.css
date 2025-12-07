@@ -1,0 +1,219 @@
+/**
+ * STYLE GUIDE PAGE STYLES
+ * Specific styles for the design system showcase
+ */
+
+@import '../../styles/global.css';
+@import '../../styles/components.css';
+@import '../../styles/animations.css';
+
+/* ═══════════════════════════════════════════════════════════
+   HERO SECTION
+   ═══════════════════════════════════════════════════════════ */
+
+.sg-hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gradient-dark);
+  background-image: var(--gradient-mesh);
+  text-align: center;
+  padding: var(--space-20) var(--space-4);
+  position: relative;
+  overflow: hidden;
+}
+
+.sg-hero::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, var(--color-crimson-glow) 0%, transparent 70%);
+  opacity: 0.3;
+  pointer-events: none;
+  animation: pulse 4s ease-in-out infinite;
+}
+
+.sg-hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+.sg-hero h1 {
+  font-size: var(--text-5xl);
+  margin-bottom: var(--space-4);
+  letter-spacing: var(--tracking-tighter);
+}
+
+.sg-hero-subtitle {
+  font-family: var(--font-body);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-medium);
+  color: var(--color-gray-400);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  margin-bottom: var(--space-6);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SECTION LAYOUT
+   ═══════════════════════════════════════════════════════════ */
+
+.sg-section {
+  margin-bottom: var(--space-20);
+}
+
+.sg-section-title {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  font-weight: var(--weight-semibold);
+  color: var(--color-gray-100);
+  margin-bottom: var(--space-3);
+  position: relative;
+  display: inline-block;
+}
+
+.sg-section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: var(--gradient-crimson);
+  border-radius: 2px;
+}
+
+.sg-subsection {
+  margin-bottom: var(--space-12);
+}
+
+.sg-subsection:last-child {
+  margin-bottom: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   COLOR PALETTE GRID
+   ═══════════════════════════════════════════════════════════ */
+
+.sg-color-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
+}
+
+.sg-color-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--color-black-soft);
+  border: 1px solid var(--color-gray-700);
+  transition: all var(--duration-base) var(--ease-standard);
+}
+
+.sg-color-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-base);
+  border-color: var(--color-gray-600);
+}
+
+.sg-color-swatch {
+  width: 100%;
+  height: 100px;
+  border-bottom: 1px solid var(--color-gray-700);
+}
+
+.sg-color-info {
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   UTILITY CLASSES FOR SHOWCASE
+   ═══════════════════════════════════════════════════════════ */
+
+.space-y-4 > * + * {
+  margin-top: var(--space-4);
+}
+
+.max-w-2xl {
+  max-width: 672px;
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE ADJUSTMENTS
+   ═══════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .sg-hero h1 {
+    font-size: var(--text-4xl);
+  }
+
+  .sg-hero-subtitle {
+    font-size: var(--text-base);
+  }
+
+  .sg-section-title {
+    font-size: var(--text-2xl);
+  }
+
+  .sg-color-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+
+  /* Hide bottom nav on very small screens to avoid clutter in showcase */
+  .bottom-nav {
+    display: none;
+  }
+}
+
+@media (min-width: 769px) {
+  /* Show bottom nav only on larger screens for demo purposes */
+  .bottom-nav {
+    max-width: 500px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    border-left: 1px solid var(--color-gray-700);
+    border-right: 1px solid var(--color-gray-700);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PRINT STYLES (for documentation)
+   ═══════════════════════════════════════════════════════════ */
+
+@media print {
+  .sg-hero,
+  .bottom-nav,
+  .btn,
+  .modal-backdrop {
+    display: none !important;
+  }
+
+  .sg-section {
+    page-break-inside: avoid;
+  }
+
+  body {
+    background: white;
+    color: black;
+  }
+
+  .card {
+    border: 1px solid #ccc;
+  }
+}

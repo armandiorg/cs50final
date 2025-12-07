@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ACCESS REQUIRED - Harvard Poops</title>
+
+  <style>
+    /* ═══════════════════════════════════════════════════════════
+       LUXURY TERMINAL AESTHETIC
+       ═══════════════════════════════════════════════════════════ */
+
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600;700&family=Fraunces:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap');
+
+    :root {
+      /* Terminal Colors - Exclusive Dark Theme */
+      --terminal-bg: #0a0a0a;
+      --terminal-fg: #e8e8e8;
+      --crimson-primary: #A41034;
+      --crimson-bright: #ff1744;
+      --crimson-glow: rgba(255, 23, 68, 0.5);
+      --green-success: #00ff41;
+      --amber-warning: #ffb300;
+
+      /* Premium Gradients */
+      --gradient-crimson: linear-gradient(135deg, #A41034 0%, #ff1744 100%);
+      --gradient-scanline: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.15),
+        rgba(0, 0, 0, 0.15) 1px,
+        transparent 1px,
+        transparent 2px
+      );
+
+      /* Typography */
+      --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+      --font-display: 'Fraunces', Georgia, serif;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-mono);
+      background: var(--terminal-bg);
+      color: var(--terminal-fg);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* CRT Screen Effect */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--gradient-scanline);
+      pointer-events: none;
+      z-index: 2;
+      opacity: 0.03;
+    }
+
+    /* Vignette Effect */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.8) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Screen Flicker Animation */
+    @keyframes flicker {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.98; }
+    }
+
+    .terminal-container {
+      width: 90%;
+      max-width: 800px;
+      padding: 60px 40px;
+      position: relative;
+      z-index: 3;
+      animation: flicker 0.15s infinite;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       ACCESS GATE (Initial State)
+       ═══════════════════════════════════════════════════════════ */
+
+    .access-gate {
+      text-align: left;
+    }
+
+    .access-gate.hidden {
+      display: none;
+    }
+
+    .terminal-header {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: rgba(232, 232, 232, 0.5);
+      margin-bottom: 40px;
+      font-weight: 300;
+    }
+
+    .terminal-line {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .prompt {
+      color: var(--crimson-bright);
+      margin-right: 12px;
+      font-weight: 500;
+      user-select: none;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 10px;
+      height: 18px;
+      background: var(--terminal-fg);
+      margin-left: 2px;
+      animation: blink 1s step-end infinite;
+    }
+
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+
+    .access-input {
+      background: transparent;
+      border: none;
+      color: var(--terminal-fg);
+      font-family: var(--font-mono);
+      font-size: 14px;
+      outline: none;
+      width: 300px;
+      letter-spacing: 0.05em;
+      caret-color: var(--terminal-fg);
+    }
+
+    .access-input::placeholder {
+      color: rgba(232, 232, 232, 0.3);
+    }
+
+    .error-message {
+      color: var(--crimson-bright);
+      font-size: 13px;
+      margin-top: 20px;
+      opacity: 0;
+      animation: fadeIn 0.3s forwards;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    .hint {
+      color: rgba(232, 232, 232, 0.4);
+      font-size: 11px;
+      margin-top: 40px;
+      font-style: italic;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       MAIN TERMINAL (After Access Granted)
+       ═══════════════════════════════════════════════════════════ */
+
+    .main-terminal {
+      display: none;
+    }
+
+    .main-terminal.active {
+      display: block;
+    }
+
+    .boot-sequence {
+      font-size: 12px;
+      color: var(--green-success);
+      margin-bottom: 60px;
+      line-height: 1.8;
+    }
+
+    .boot-line {
+      opacity: 0;
+      animation: typeIn 0.05s forwards;
+    }
+
+    @keyframes typeIn {
+      to { opacity: 1; }
+    }
+
+    /* Harvard Poops Title - Luxury Display */
+    .main-title {
+      font-family: var(--font-display);
+      font-size: clamp(48px, 10vw, 96px);
+      font-weight: 700;
+      font-style: italic;
+      line-height: 1;
+      margin-bottom: 20px;
+      background: var(--gradient-crimson);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 40px var(--crimson-glow);
+      letter-spacing: -0.02em;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: titleReveal 1s cubic-bezier(0.4, 0, 0.2, 1) 0.5s forwards;
+    }
+
+    @keyframes titleReveal {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .subtitle {
+      font-family: var(--font-mono);
+      font-size: clamp(14px, 2.5vw, 18px);
+      font-weight: 300;
+      color: rgba(232, 232, 232, 0.6);
+      letter-spacing: 0.1em;
+      margin-bottom: 80px;
+      opacity: 0;
+      animation: fadeIn 0.8s 1.2s forwards;
+    }
+
+    .subtitle .emoji {
+      font-family: 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif;
+      font-size: 1.2em;
+      vertical-align: middle;
+    }
+
+    /* CTA Section */
+    .cta-section {
+      opacity: 0;
+      animation: fadeIn 0.8s 1.8s forwards;
+    }
+
+    .access-button {
+      background: transparent;
+      border: 2px solid var(--crimson-bright);
+      color: var(--terminal-fg);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      padding: 18px 40px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      font-weight: 500;
+    }
+
+    .access-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: var(--gradient-crimson);
+      transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: -1;
+    }
+
+    .access-button:hover::before {
+      left: 0;
+    }
+
+    .access-button:hover {
+      border-color: var(--crimson-bright);
+      box-shadow: 0 0 20px var(--crimson-glow);
+      transform: translateY(-2px);
+    }
+
+    .access-button:active {
+      transform: translateY(0);
+    }
+
+    /* System Info Footer */
+    .system-info {
+      margin-top: 100px;
+      font-size: 10px;
+      color: rgba(232, 232, 232, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0;
+      animation: fadeIn 0.8s 2.2s forwards;
+    }
+
+    .system-info span {
+      display: inline-block;
+      margin-right: 20px;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       RESPONSIVE
+       ═══════════════════════════════════════════════════════════ */
+
+    @media (max-width: 768px) {
+      .terminal-container {
+        padding: 40px 24px;
+      }
+
+      .main-title {
+        font-size: 48px;
+      }
+
+      .subtitle {
+        font-size: 14px;
+      }
+
+      .access-button {
+        width: 100%;
+        padding: 16px 32px;
+      }
+
+      .system-info {
+        margin-top: 60px;
+      }
+
+      .system-info span {
+        display: block;
+        margin-bottom: 8px;
+      }
+    }
+
+    /* Glow Effect on Success */
+    @keyframes successGlow {
+      0%, 100% {
+        text-shadow: 0 0 10px var(--green-success);
+      }
+      50% {
+        text-shadow: 0 0 20px var(--green-success), 0 0 30px var(--green-success);
+      }
+    }
+
+    .success-text {
+      color: var(--green-success);
+      animation: successGlow 1s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body>
+  <div class="terminal-container">
+    <!-- ACCESS GATE (Initial State) -->
+    <div class="access-gate" id="accessGate">
+      <div class="terminal-header">
+        Harvard University - Secure Access Terminal
+      </div>
+
+      <div class="terminal-line">
+        <span class="prompt">$</span>
+        <span>Establishing secure connection...</span>
+      </div>
+
+      <div class="terminal-line">
+        <span class="prompt">$</span>
+        <span class="success-text">Connection established.</span>
+      </div>
+
+      <div class="terminal-line" style="margin-top: 30px;">
+        <span class="prompt">$</span>
+        <span>Access restricted. Authorization required.</span>
+      </div>
+
+      <div class="terminal-line" style="margin-top: 20px;">
+        <span class="prompt">></span>
+        <input
+          type="text"
+          class="access-input"
+          id="accessCode"
+          placeholder="Enter access code..."
+          autocomplete="off"
+          spellcheck="false"
+        >
+      </div>
+
+      <div id="errorMessage"></div>
+
+      <div class="hint">
+        Hint: Try "VERITAS" or "HARVARD2025"
+      </div>
+    </div>
+
+    <!-- MAIN TERMINAL (After Access Granted) -->
+    <div class="main-terminal" id="mainTerminal">
+      <div class="boot-sequence" id="bootSequence">
+        <!-- Boot messages will be added via JS -->
+      </div>
+
+      <h1 class="main-title">Harvard Poops</h1>
+
+      <p class="subtitle">
+        Where <span class="emoji">💩</span> happens at Harvard
+      </p>
+
+      <div class="cta-section">
+        <button class="access-button" onclick="window.location.href='partiful-style-demo.html'">
+          Enter Platform →
+        </button>
+      </div>
+
+      <div class="system-info">
+        <span>System: Harvard-Events-v2.0</span>
+        <span>Security: Verified</span>
+        <span>Status: Active</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Access code validation
+    const validCodes = ['VERITAS', 'HARVARD2025', 'HARVARD', 'CRIMSON', 'POOPS'];
+    const accessInput = document.getElementById('accessCode');
+    const accessGate = document.getElementById('accessGate');
+    const mainTerminal = document.getElementById('mainTerminal');
+    const errorMessage = document.getElementById('errorMessage');
+
+    let attempts = 0;
+
+    accessInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        validateAccess();
+      }
+    });
+
+    function validateAccess() {
+      const code = accessInput.value.trim().toUpperCase();
+
+      if (validCodes.includes(code)) {
+        // Success!
+        grantAccess();
+      } else {
+        // Failed attempt
+        attempts++;
+        showError(attempts);
+      }
+    }
+
+    function showError(attemptNum) {
+      const messages = [
+        'ERROR: Invalid access code. Please try again.',
+        'ERROR: Authentication failed. Access denied.',
+        'WARNING: Multiple failed attempts detected. One more try...',
+        'CRITICAL: Too many failed attempts. System locked.<br><br>...Just kidding. Try "VERITAS" 😉'
+      ];
+
+      const index = Math.min(attemptNum - 1, messages.length - 1);
+      errorMessage.innerHTML = `<div class="error-message">${messages[index]}</div>`;
+
+      // Clear input
+      accessInput.value = '';
+      accessInput.focus();
+    }
+
+    function grantAccess() {
+      // Hide access gate
+      accessGate.classList.add('hidden');
+
+      // Show main terminal
+      mainTerminal.classList.add('active');
+
+      // Boot sequence
+      const bootMessages = [
+        'ACCESS GRANTED',
+        'Authenticating user...',
+        'Loading Harvard Events Platform...',
+        'Initializing secure session...',
+        'Welcome to Harvard Poops.',
+        ''
+      ];
+
+      const bootSequence = document.getElementById('bootSequence');
+
+      bootMessages.forEach((message, index) => {
+        setTimeout(() => {
+          const line = document.createElement('div');
+          line.className = 'boot-line';
+          line.textContent = '> ' + message;
+          line.style.animationDelay = '0s';
+          bootSequence.appendChild(line);
+        }, index * 150);
+      });
+    }
+
+    // Auto-focus input on load
+    window.addEventListener('load', () => {
+      accessInput.focus();
+    });
+
+    // Easter egg: Allow quick access with keyboard shortcut
+    document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.key === 'p') {
+        e.preventDefault();
+        accessInput.value = 'VERITAS';
+        validateAccess();
+      }
+    });
+  </script>
+</body>
+</html>

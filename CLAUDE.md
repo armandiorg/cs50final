@@ -121,8 +121,9 @@ ARCHITECTURE.md shows the recommended folder structure (components/, pages/, hoo
 
 ### Current Tech Stack
 - **Frontend**: React + Vite
+- **Styling**: Tailwind CSS
 - **Backend/Database**: Supabase (PostgreSQL)
-- **Deployment**: Railway
+- **Deployment**: Vercel
 - **Domain**: harvardpoops.com
 
 ### Folder Organization
@@ -153,4 +154,4 @@ cs50final/
 
 ---
 
-*Last Updated*: 2025-12-06
+*Last Updated*: 2025-12-06 (Updated tech stack to Vercel + Tailwind CSS)

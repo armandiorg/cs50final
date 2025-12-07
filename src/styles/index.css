@@ -1,0 +1,21 @@
+/**
+ * MAIN STYLESHEET
+ * Import order: tokens → typography → global → components → animations
+ */
+
+@import './tokens.css';
+@import './typography.css';
+@import './global.css';
+@import './components.css';
+@import './animations.css';
+
+/**
+ * This is the single entry point for all styles.
+ * Import this file in your main React/HTML entry point.
+ *
+ * Example (React):
+ * import './styles/index.css';
+ *
+ * Example (HTML):
+ * <link rel="stylesheet" href="/styles/index.css">
+ */
