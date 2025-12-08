@@ -4,9 +4,20 @@ import EventFeed from '../components/EventFeed'
 import CreateEventButton from '../components/CreateEventButton'
 
 export default function Home() {
-  const { user, profile } = useAuth()
+  const { user, profile, loading } = useAuth()
 
-  if (!user || !profile) {
+  // Show loading state only during initial auth check
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <div className="spinner"></div>
+        <p className="loading-text">Loading...</p>
+      </div>
+    )
+  }
+
+  // Not logged in - show landing page
+  if (!user) {
     return (
       <div className="auth-container">
         <div className="auth-card text-center">
@@ -14,7 +25,7 @@ export default function Home() {
           <p className="text-sm text-secondary mb-8">
             The go-to social app for Harvard events
           </p>
-          <div className="flex gap-4 justify-center">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <Link to="/login" className="btn btn-primary">
               Sign In
             </Link>
@@ -27,6 +38,8 @@ export default function Home() {
     )
   }
 
+  // Logged in but profile still loading - show the main UI anyway
+  // Profile will appear when it loads
   return (
     <div style={{ minHeight: '100vh', background: 'var(--color-black-true)' }}>
       {/* Header */}

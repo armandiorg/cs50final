@@ -320,32 +320,41 @@
   background: var(--color-black-elevated);
   border-bottom: 1px solid var(--color-gray-800);
   box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .header-content {
   max-width: 1280px;
   margin: 0 auto;
-  padding: var(--space-4) var(--space-4);
+  padding: var(--space-3) var(--space-5);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  min-height: 56px;
 }
 
 .header-title {
   font-family: var(--font-display);
-  font-size: var(--text-2xl);
+  font-size: var(--text-xl);
   font-weight: var(--weight-bold);
   background: var(--gradient-crimson);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  line-height: 1;
+  margin: 0;
 }
 
 .header-link {
   font-size: var(--text-sm);
-  color: var(--color-gray-400);
+  font-weight: var(--weight-medium);
+  color: var(--color-gray-300);
   text-decoration: none;
   transition: color var(--duration-fast) var(--ease-standard);
+  padding: 8px 0;
+  border-radius: var(--radius-base);
 }
 
 .header-link:hover {

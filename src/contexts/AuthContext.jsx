@@ -16,40 +16,7 @@ export const AuthProvider = ({ children }) => {
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    // Get initial session with proper async/await to prevent race conditions
-    const initAuth = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession()
-        setUser(session?.user ?? null)
-        if (session?.user) {
-          await fetchProfile(session.user.id)
-        }
-      } catch (err) {
-        console.error('Auth initialization failed:', err)
-      } finally {
-        // ALWAYS set loading to false, even if errors occur
-        setLoading(false)
-      }
-    }
-    initAuth()
-
-    // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      setUser(session?.user ?? null)
-      if (session?.user) {
-        await fetchProfile(session.user.id)
-      } else {
-        setProfile(null)
-        setLoading(false)
-      }
-    })
-
-    return () => subscription.unsubscribe()
-  }, [])
-
+  // Fetch profile helper - never blocks loading state
   const fetchProfile = async (userId) => {
     try {
       const { data, error } = await supabase
@@ -60,13 +27,62 @@ export const AuthProvider = ({ children }) => {
 
       if (error) throw error
       setProfile(data)
+      return data
     } catch (error) {
       console.error('Error fetching profile:', error.message)
       setProfile(null)
-    } finally {
-      setLoading(false)
+      return null
     }
   }
+
+  useEffect(() => {
+    let mounted = true
+
+    // Get initial session
+    const initAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        
+        if (!mounted) return
+        
+        if (session?.user) {
+          setUser(session.user)
+          await fetchProfile(session.user.id)
+        } else {
+          setUser(null)
+          setProfile(null)
+        }
+      } catch (err) {
+        console.error('Auth initialization failed:', err)
+      } finally {
+        if (mounted) {
+          setLoading(false)
+        }
+      }
+    }
+    
+    initAuth()
+
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (!mounted) return
+      
+      if (session?.user) {
+        setUser(session.user)
+        fetchProfile(session.user.id) // Don't await - let it update in background
+      } else {
+        setUser(null)
+        setProfile(null)
+      }
+    })
+
+    return () => {
+      mounted = false
+      subscription.unsubscribe()
+    }
+  }, [])
 
   const signUp = async ({ email, password, fullName, year, house, phoneNumber, referralCode }) => {
     try {
@@ -127,6 +143,27 @@ export const AuthProvider = ({ children }) => {
         .eq('code', referralCode.toUpperCase())
 
       if (updateCodeError) throw updateCodeError
+
+      // If we have a session, set user and fetch profile for auto-login
+      if (authData.session) {
+        setUser(authData.user)
+        await fetchProfile(authData.user.id)
+      } else {
+        // If no session (email confirmation required), sign in manually
+        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        })
+        
+        if (signInError) {
+          // If sign in fails, the user was created but needs to confirm email
+          // Still return success so they know account was created
+          console.log('Account created, may need email confirmation')
+        } else if (signInData.user) {
+          setUser(signInData.user)
+          await fetchProfile(signInData.user.id)
+        }
+      }
 
       return { user: authData.user, error: null }
     } catch (error) {

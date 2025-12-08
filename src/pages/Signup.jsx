@@ -268,18 +268,18 @@ export default function Signup() {
                 options={YEARS}
                 value={formData.year}
                 onChange={handleYearChange}
-                placeholder="Select year"
+                placeholder="Select..."
                 required
               />
             </div>
 
             <div className="form-group">
               <Dropdown
-                label="House"
+                label="House/Dorm"
                 options={getAvailableHouses()}
                 value={formData.house}
                 onChange={handleHouseChange}
-                placeholder={formData.year ? "Select house" : "Select year first"}
+                placeholder={formData.year ? "Select..." : "Year first"}
                 disabled={!formData.year}
                 required
               />

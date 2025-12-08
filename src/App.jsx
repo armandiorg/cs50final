@@ -7,19 +7,26 @@ import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Profile from './pages/Profile'
 
-// Protected Route component
+// Simple loading component
+function LoadingScreen() {
+  return (
+    <div className="loading-container">
+      <div className="spinner"></div>
+      <p className="loading-text">Loading...</p>
+    </div>
+  )
+}
+
+// Protected Route component - only blocks if definitely not logged in
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth()
 
+  // While loading, show spinner briefly
   if (loading) {
-    return (
-      <div className="loading-container">
-        <div className="spinner"></div>
-        <p className="loading-text">Loading...</p>
-      </div>
-    )
+    return <LoadingScreen />
   }
 
+  // If not logged in, redirect to login
   if (!user) {
     return <Navigate to="/login" replace />
   }
@@ -27,56 +34,35 @@ function ProtectedRoute({ children }) {
   return children
 }
 
-// Public Route component (redirect to home if already logged in)
-function PublicRoute({ children }) {
-  const { user, loading } = useAuth()
-
-  if (loading) {
-    return (
-      <div className="loading-container">
-        <div className="spinner"></div>
-        <p className="loading-text">Loading...</p>
-      </div>
-    )
-  }
-
-  if (user) {
-    return <Navigate to="/" replace />
-  }
-
-  return children
-}
-
 function AppRoutes() {
+  const { user, loading } = useAuth()
+  
   return (
     <Routes>
-      {/* Public routes */}
+      {/* Login - redirect to home if already logged in */}
       <Route
         path="/login"
         element={
-          <PublicRoute>
-            <Login />
-          </PublicRoute>
+          loading ? <LoadingScreen /> : 
+          user ? <Navigate to="/" replace /> : 
+          <Login />
         }
       />
+      
+      {/* Signup - redirect to home if already logged in */}
       <Route
         path="/signup"
         element={
-          <PublicRoute>
-            <Signup />
-          </PublicRoute>
+          loading ? <LoadingScreen /> : 
+          user ? <Navigate to="/" replace /> : 
+          <Signup />
         }
       />
 
+      {/* Home - accessible to all, shows different content based on auth */}
+      <Route path="/" element={<Home />} />
+      
       {/* Protected routes */}
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <Home />
-          </ProtectedRoute>
-        }
-      />
       <Route
         path="/profile"
         element={
