@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { useEvents } from '../contexts/EventContext'
 import { rsvpService } from '../services/rsvpService'
@@ -9,14 +9,30 @@ import { rsvpService } from '../services/rsvpService'
  */
 export const useRSVP = (eventId) => {
   const { user, profile } = useAuth()
-  const { userRSVPs, refreshUserRSVPs } = useEvents()
+  const { userRSVPs, rsvpLoading, refreshUserRSVPs } = useEvents()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [rsvpCount, setRsvpCount] = useState(0)
+
+  // Fetch RSVP count on mount
+  useEffect(() => {
+    const fetchCount = async () => {
+      try {
+        const count = await rsvpService.getEventRSVPCount(eventId)
+        setRsvpCount(count)
+      } catch (err) {
+        console.error('Error fetching RSVP count:', err)
+      }
+    }
+    fetchCount()
+  }, [eventId])
 
   // Check if user has RSVPed to this event
+  // Returns null while loading to indicate "unknown" state
   const isRSVPed = useMemo(() => {
+    if (rsvpLoading) return null // Unknown while loading
     return userRSVPs.some((rsvp) => rsvp.event_id === eventId)
-  }, [userRSVPs, eventId])
+  }, [userRSVPs, eventId, rsvpLoading])
 
   // Create RSVP
   const createRSVP = useCallback(async () => {
@@ -34,6 +50,9 @@ export const useRSVP = (eventId) => {
         user_email: profile.email,
         user_name: profile.full_name,
       })
+
+      // Optimistic update for count
+      setRsvpCount(prev => prev + 1)
 
       // Refresh user RSVPs to update UI
       await refreshUserRSVPs()
@@ -57,6 +76,9 @@ export const useRSVP = (eventId) => {
 
       await rsvpService.cancelRSVP(user.id, eventId)
 
+      // Optimistic update for count
+      setRsvpCount(prev => Math.max(0, prev - 1))
+
       // Refresh user RSVPs to update UI
       await refreshUserRSVPs()
     } catch (err) {
@@ -78,6 +100,7 @@ export const useRSVP = (eventId) => {
 
   return {
     isRSVPed,
+    rsvpCount,
     loading,
     error,
     createRSVP,

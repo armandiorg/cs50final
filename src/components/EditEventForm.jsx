@@ -1,13 +1,14 @@
-import { useState, useRef } from 'react'
-import { useEventCreate } from '../hooks/useEventCreate'
+import { useState, useRef, useEffect } from 'react'
+import { eventService } from '../services/eventService'
+import { imageService } from '../services/imageService'
 
 /**
- * Modal form for creating new events
- * Handles all event metadata + cover image upload
+ * Modal form for editing existing events
  */
-export default function CreateEventForm({ isOpen, onClose }) {
-  const { createEvent, loading, error, uploadProgress } = useEventCreate()
+export default function EditEventForm({ isOpen, onClose, event, onUpdate }) {
   const fileInputRef = useRef(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const [formData, setFormData] = useState({
     title: '',
@@ -16,13 +17,29 @@ export default function CreateEventForm({ isOpen, onClose }) {
     time: '',
     location: '',
     type: 'party',
-    max_attendees: '',
     has_chat: false,
     has_voting: false,
   })
 
   const [coverImage, setCoverImage] = useState(null)
   const [imagePreview, setImagePreview] = useState(null)
+
+  // Initialize form with event data
+  useEffect(() => {
+    if (event) {
+      setFormData({
+        title: event.title || '',
+        description: event.description || '',
+        date: event.date || '',
+        time: event.time || '',
+        location: event.location || '',
+        type: event.type || 'party',
+        has_chat: event.has_chat || false,
+        has_voting: event.has_voting || false,
+      })
+      setImagePreview(event.cover_image_url || null)
+    }
+  }, [event])
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -38,7 +55,6 @@ export default function CreateEventForm({ isOpen, onClose }) {
 
     setCoverImage(file)
 
-    // Create preview URL
     const reader = new FileReader()
     reader.onloadend = () => {
       setImagePreview(reader.result)
@@ -56,36 +72,32 @@ export default function CreateEventForm({ isOpen, onClose }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setError('')
+    setLoading(true)
 
     try {
-      const eventData = {
-        ...formData,
-        max_attendees: formData.max_attendees ? parseInt(formData.max_attendees) : null,
-        status: 'published',
-        has_rsvp: true,
-        has_chat: formData.has_chat,
-        has_voting: formData.type === 'contest' ? formData.has_voting : false,
+      let cover_image_url = event.cover_image_url
+
+      // Upload new image if selected
+      if (coverImage) {
+        cover_image_url = await imageService.uploadEventCover(coverImage, event.id)
+      } else if (!imagePreview && event.cover_image_url) {
+        // Image was removed
+        cover_image_url = null
       }
 
-      await createEvent(eventData, coverImage)
-
-      // Success - close modal and reset form
-      onClose()
-      setFormData({
-        title: '',
-        description: '',
-        date: '',
-        time: '',
-        location: '',
-        type: 'party',
-        max_attendees: '',
-        has_chat: false,
-        has_voting: false,
+      const updatedEvent = await eventService.updateEvent(event.id, {
+        ...formData,
+        cover_image_url,
       })
-      setCoverImage(null)
-      setImagePreview(null)
+
+      onUpdate(updatedEvent)
+      onClose()
     } catch (err) {
-      console.error('Failed to create event:', err)
+      console.error('Failed to update event:', err)
+      setError(err.message || 'Failed to update event')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -95,18 +107,9 @@ export default function CreateEventForm({ isOpen, onClose }) {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2 className="h2">Create Event</h2>
+          <h2 className="h2">Edit Event</h2>
           <button className="modal-close" onClick={onClose} aria-label="Close modal">
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
@@ -138,14 +141,7 @@ export default function CreateEventForm({ isOpen, onClose }) {
                   className="file-input"
                 />
                 <div className="file-input-placeholder">
-                  <svg
-                    width="48"
-                    height="48"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                  >
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                     <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                     <circle cx="8.5" cy="8.5" r="1.5"></circle>
                     <polyline points="21 15 16 10 5 21"></polyline>
@@ -158,11 +154,9 @@ export default function CreateEventForm({ isOpen, onClose }) {
 
           {/* Title */}
           <div className="form-group">
-            <label htmlFor="title" className="label">
-              Event Title *
-            </label>
+            <label htmlFor="edit-title" className="label">Event Title *</label>
             <input
-              id="title"
+              id="edit-title"
               name="title"
               type="text"
               value={formData.title}
@@ -176,11 +170,9 @@ export default function CreateEventForm({ isOpen, onClose }) {
 
           {/* Description */}
           <div className="form-group">
-            <label htmlFor="description" className="label">
-              Description *
-            </label>
+            <label htmlFor="edit-description" className="label">Description *</label>
             <textarea
-              id="description"
+              id="edit-description"
               name="description"
               value={formData.description}
               onChange={handleChange}
@@ -195,27 +187,22 @@ export default function CreateEventForm({ isOpen, onClose }) {
           {/* Date & Time */}
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="date" className="label">
-                Date *
-              </label>
+              <label htmlFor="edit-date" className="label">Date *</label>
               <input
-                id="date"
+                id="edit-date"
                 name="date"
                 type="date"
                 value={formData.date}
                 onChange={handleChange}
                 required
-                min={new Date().toISOString().split('T')[0]}
                 className="input"
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="time" className="label">
-                Time *
-              </label>
+              <label htmlFor="edit-time" className="label">Time *</label>
               <input
-                id="time"
+                id="edit-time"
                 name="time"
                 type="time"
                 value={formData.time}
@@ -228,11 +215,9 @@ export default function CreateEventForm({ isOpen, onClose }) {
 
           {/* Location */}
           <div className="form-group">
-            <label htmlFor="location" className="label">
-              Location *
-            </label>
+            <label htmlFor="edit-location" className="label">Location *</label>
             <input
-              id="location"
+              id="edit-location"
               name="location"
               type="text"
               value={formData.location}
@@ -246,11 +231,9 @@ export default function CreateEventForm({ isOpen, onClose }) {
 
           {/* Event Type */}
           <div className="form-group">
-            <label htmlFor="type" className="label">
-              Event Type *
-            </label>
+            <label htmlFor="edit-type" className="label">Event Type *</label>
             <select
-              id="type"
+              id="edit-type"
               name="type"
               value={formData.type}
               onChange={handleChange}
@@ -265,24 +248,6 @@ export default function CreateEventForm({ isOpen, onClose }) {
             </select>
           </div>
 
-          {/* Max Attendees */}
-          <div className="form-group">
-            <label htmlFor="max_attendees" className="label">
-              Max Attendees (optional)
-            </label>
-            <input
-              id="max_attendees"
-              name="max_attendees"
-              type="number"
-              value={formData.max_attendees}
-              onChange={handleChange}
-              min={1}
-              max={1000}
-              className="input"
-              placeholder="Leave empty for unlimited"
-            />
-          </div>
-
           {/* Event Chat Toggle */}
           <div className="form-group">
             <label className="checkbox-label">
@@ -295,11 +260,6 @@ export default function CreateEventForm({ isOpen, onClose }) {
               />
               <span>Enable event chat</span>
             </label>
-            {formData.has_chat && (
-              <p className="text-sm text-secondary" style={{ marginTop: '4px', marginLeft: '24px' }}>
-                Attendees can chat with each other in real-time
-              </p>
-            )}
           </div>
 
           {/* Live Voting Toggle (Contest events only) */}
@@ -315,31 +275,13 @@ export default function CreateEventForm({ isOpen, onClose }) {
                 />
                 <span>Enable live voting</span>
               </label>
-              {formData.has_voting && (
-                <p className="text-sm text-secondary" style={{ marginTop: '4px', marginLeft: '24px' }}>
-                  Attendees can vote on contest options in real-time
-                </p>
-              )}
             </div>
           )}
 
           {/* Error Display */}
           {error && (
-            <div className="alert alert-error">
-              {error}
-            </div>
-          )}
-
-          {/* Upload Progress */}
-          {loading && uploadProgress > 0 && (
-            <div className="upload-progress">
-              <div className="progress-bar">
-                <div
-                  className="progress-bar-fill"
-                  style={{ width: `${uploadProgress}%` }}
-                ></div>
-              </div>
-              <p className="text-sm text-secondary">{uploadProgress}% uploaded</p>
+            <div className="error-banner">
+              <p className="error-text">{error}</p>
             </div>
           )}
 
@@ -354,7 +296,7 @@ export default function CreateEventForm({ isOpen, onClose }) {
               Cancel
             </button>
             <button type="submit" className="btn btn-primary" disabled={loading}>
-              {loading ? 'Creating...' : 'Create Event'}
+              {loading ? 'Saving...' : 'Save Changes'}
             </button>
           </div>
         </form>

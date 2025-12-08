@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom'
 import { useRSVP } from '../hooks/useRSVP'
 import { imageService } from '../services/imageService'
 
@@ -7,7 +8,8 @@ import { imageService } from '../services/imageService'
  * Supports both unlocked (full details) and locked (teaser) states
  */
 export default function EventCard({ event, isLocked = false, onClick }) {
-  const { isRSVPed, toggleRSVP, loading } = useRSVP(event.id)
+  const { isRSVPed, rsvpCount, toggleRSVP, loading } = useRSVP(event.id)
+  const navigate = useNavigate()
 
   // Format date: "Dec 15"
   const formatDate = (dateString) => {
@@ -65,7 +67,7 @@ export default function EventCard({ event, isLocked = false, onClick }) {
 
   // Render unlocked card
   return (
-    <div className="event-card" onClick={onClick}>
+    <div className="event-card" onClick={() => navigate(`/event/${event.id}`, { state: { event, isRSVPed, rsvpCount } })}>
       <div className="event-card-image">
         {event.cover_image_url ? (
           <img src={event.cover_image_url} alt={event.title} loading="lazy" />
@@ -79,7 +81,7 @@ export default function EventCard({ event, isLocked = false, onClick }) {
         {event.type && (
           <div className="flex gap-2 mb-3">
             <span className="badge badge-crimson">{event.type.toUpperCase()}</span>
-            {isRSVPed && <span className="badge badge-success">RSVPed ✓</span>}
+            {isRSVPed === true && <span className="badge badge-success">RSVPed ✓</span>}
           </div>
         )}
 
@@ -104,14 +106,14 @@ export default function EventCard({ event, isLocked = false, onClick }) {
 
         {/* RSVP button */}
         <button
-          className={`btn ${isRSVPed ? 'btn-secondary' : 'btn-primary'} w-full`}
+          className={`btn ${isRSVPed === true ? 'btn-secondary' : 'btn-primary'} w-full`}
           onClick={(e) => {
             e.stopPropagation()
             toggleRSVP()
           }}
-          disabled={loading}
+          disabled={loading || isRSVPed === null}
         >
-          {loading ? (
+          {loading || isRSVPed === null ? (
             <span className="spinner spinner-sm"></span>
           ) : isRSVPed ? (
             'Cancel RSVP'

@@ -55,6 +55,36 @@ export const rsvpService = {
   },
 
   /**
+   * Get all RSVPs for a user with full event details
+   * @param {string} userId - UUID of the user
+   * @returns {Promise<Array>} Array of RSVP objects with event data
+   */
+  async getUserRSVPsWithEvents(userId) {
+    const { data, error } = await supabase
+      .from('rsvps')
+      .select(`
+        *,
+        events (
+          id,
+          title,
+          date,
+          time,
+          location,
+          type,
+          cover_image_url,
+          status
+        )
+      `)
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+
+    if (error) throw new Error(`Failed to get user RSVPs: ${error.message}`)
+    
+    // Filter out RSVPs where the event no longer exists or is not published
+    return (data || []).filter(rsvp => rsvp.events && rsvp.events.status === 'published')
+  },
+
+  /**
    * Get RSVP count for an event
    * @param {string} eventId - UUID of the event
    * @returns {Promise<number>} Number of RSVPs for the event

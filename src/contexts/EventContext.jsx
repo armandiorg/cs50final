@@ -19,6 +19,7 @@ export const EventProvider = ({ children }) => {
   const [userRSVPs, setUserRSVPs] = useState([])
   const [rsvpCount, setRSVPCount] = useState(0)
   const [loading, setLoading] = useState(true)
+  const [rsvpLoading, setRsvpLoading] = useState(true)
   const [error, setError] = useState(null)
 
   // Track if component is mounted to prevent state updates after unmount
@@ -60,9 +61,13 @@ export const EventProvider = ({ children }) => {
   }, [])
 
   const loadUserRSVPs = useCallback(async () => {
-    if (!user) return
+    if (!user) {
+      setRsvpLoading(false)
+      return
+    }
 
     try {
+      setRsvpLoading(true)
       const data = await rsvpService.getUserRSVPs(user.id)
       if (isMountedRef.current) {
         setUserRSVPs(data)
@@ -73,6 +78,10 @@ export const EventProvider = ({ children }) => {
       if (isMountedRef.current) {
         setUserRSVPs([])
         setRSVPCount(0)
+      }
+    } finally {
+      if (isMountedRef.current) {
+        setRsvpLoading(false)
       }
     }
   }, [user])
@@ -117,6 +126,7 @@ export const EventProvider = ({ children }) => {
     userRSVPs,
     rsvpCount,
     loading,
+    rsvpLoading,
     error,
     refreshEvents,
     refreshUserRSVPs,
