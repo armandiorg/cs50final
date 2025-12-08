@@ -92,6 +92,22 @@ export const eventService = {
   },
 
   /**
+   * Get events created by a specific user
+   * @param {string} userId - UUID of the user
+   * @returns {Promise<Array>} User's events ordered by date
+   */
+  async getUserEvents(userId) {
+    const { data, error } = await supabase
+      .from('events')
+      .select('*')
+      .eq('host_id', userId)
+      .order('date', { ascending: false })
+
+    if (error) throw new Error(`Failed to fetch user events: ${error.message}`)
+    return data || []
+  },
+
+  /**
    * Subscribe to realtime event changes
    * @param {Function} callback - Called when events change
    * @returns {Function} Unsubscribe function

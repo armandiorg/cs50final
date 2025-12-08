@@ -240,6 +240,13 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
+  // Refresh profile function to be called after profile updates
+  const refreshProfile = async () => {
+    if (user) {
+      await fetchProfile(user.id)
+    }
+  }
+
   const value = {
     user,
     profile,
@@ -248,6 +255,7 @@ export const AuthProvider = ({ children }) => {
     signIn,
     signOut,
     generateReferralCode,
+    refreshProfile,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

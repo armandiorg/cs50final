@@ -6,6 +6,7 @@ import Home from './pages/Home'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Profile from './pages/Profile'
+import EventDetail from './pages/EventDetail'
 
 // Simple loading component
 function LoadingScreen() {
@@ -61,6 +62,16 @@ function AppRoutes() {
 
       {/* Home - accessible to all, shows different content based on auth */}
       <Route path="/" element={<Home />} />
+      
+      {/* Event Detail - accessible to all logged in users */}
+      <Route
+        path="/event/:id"
+        element={
+          <ProtectedRoute>
+            <EventDetail />
+          </ProtectedRoute>
+        }
+      />
       
       {/* Protected routes */}
       <Route

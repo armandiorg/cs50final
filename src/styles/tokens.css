@@ -24,6 +24,11 @@
   --color-bg-elevated: #2d2438;
   --color-bg-card: #2a2236;
 
+  /* Black variants (for legacy compatibility) */
+  --color-black-true: #1a1625;
+  --color-black-elevated: #2d2438;
+  --color-black-soft: #231b2e;
+
   /* Harvard Crimson (Primary actions - keeping your brand) */
   --color-crimson-primary: #A41034;
   --color-crimson-bright: #C41E3A;

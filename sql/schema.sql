@@ -208,6 +208,7 @@ CREATE POLICY "Authenticated users can vote"
   ON votes FOR INSERT
   WITH CHECK (auth.uid() = voter_id);
 
+ALTER TABLE events ADD COLUMN voting_options JSONB DEFAULT '[]'::jsonb;
 -- ============================================
 -- CHAT MESSAGES TABLE
 -- ============================================
