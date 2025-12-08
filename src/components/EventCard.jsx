@@ -81,7 +81,7 @@ export default function EventCard({ event, isLocked = false, onClick }) {
         {event.type && (
           <div className="flex gap-2 mb-3">
             <span className="badge badge-crimson">{event.type.toUpperCase()}</span>
-            {isRSVPed && <span className="badge badge-success">RSVPed ✓</span>}
+            {isRSVPed === true && <span className="badge badge-success">RSVPed ✓</span>}
           </div>
         )}
 
@@ -106,14 +106,14 @@ export default function EventCard({ event, isLocked = false, onClick }) {
 
         {/* RSVP button */}
         <button
-          className={`btn ${isRSVPed ? 'btn-secondary' : 'btn-primary'} w-full`}
+          className={`btn ${isRSVPed === true ? 'btn-secondary' : 'btn-primary'} w-full`}
           onClick={(e) => {
             e.stopPropagation()
             toggleRSVP()
           }}
-          disabled={loading}
+          disabled={loading || isRSVPed === null}
         >
-          {loading ? (
+          {loading || isRSVPed === null ? (
             <span className="spinner spinner-sm"></span>
           ) : isRSVPed ? (
             'Cancel RSVP'

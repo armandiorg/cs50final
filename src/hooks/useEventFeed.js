@@ -6,7 +6,7 @@ import { useEvents } from '../contexts/EventContext'
  * Applies RSVP-based unlocking: 0 RSVPs → 3 events, 1 RSVP → 6 events, 2+ RSVPs → all events
  */
 export const useEventFeed = () => {
-  const { events, rsvpCount, loading, error } = useEvents()
+  const { events, rsvpCount, loading, rsvpLoading, error } = useEvents()
 
   // Calculate how many events should be visible based on RSVP count
   const unlockedCount = useMemo(() => {
@@ -25,10 +25,12 @@ export const useEventFeed = () => {
   }, [events, unlockedCount])
 
   const lockedCount = lockedEvents.length
-  const hasLockedEvents = lockedCount > 0
+  // Don't show locked events while RSVPs are still loading (prevents flash)
+  const hasLockedEvents = !rsvpLoading && lockedCount > 0
 
   // Calculate unlock progress message
   const unlockMessage = useMemo(() => {
+    if (rsvpLoading) return null // Don't show message while loading
     if (rsvpCount === 0 && hasLockedEvents) {
       return 'RSVP to 1 event to see 6 events total'
     }
@@ -39,7 +41,7 @@ export const useEventFeed = () => {
       return 'All events unlocked!'
     }
     return null
-  }, [rsvpCount, hasLockedEvents])
+  }, [rsvpCount, hasLockedEvents, rsvpLoading])
 
   return {
     visibleEvents,

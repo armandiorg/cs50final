@@ -9,7 +9,7 @@ import { rsvpService } from '../services/rsvpService'
  */
 export const useRSVP = (eventId) => {
   const { user, profile } = useAuth()
-  const { userRSVPs, refreshUserRSVPs } = useEvents()
+  const { userRSVPs, rsvpLoading, refreshUserRSVPs } = useEvents()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [rsvpCount, setRsvpCount] = useState(0)
@@ -28,9 +28,11 @@ export const useRSVP = (eventId) => {
   }, [eventId])
 
   // Check if user has RSVPed to this event
+  // Returns null while loading to indicate "unknown" state
   const isRSVPed = useMemo(() => {
+    if (rsvpLoading) return null // Unknown while loading
     return userRSVPs.some((rsvp) => rsvp.event_id === eventId)
-  }, [userRSVPs, eventId])
+  }, [userRSVPs, eventId, rsvpLoading])
 
   // Create RSVP
   const createRSVP = useCallback(async () => {
